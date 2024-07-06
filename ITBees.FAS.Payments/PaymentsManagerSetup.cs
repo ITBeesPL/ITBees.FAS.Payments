@@ -10,9 +10,9 @@ namespace ITBees.FAS.Payments;
 public class PaymentsManagerSetup : IFasDependencyRegistrationWithGenerics
 {
     
-    public void RegisterDefaultPaymentProvider<T>(IServiceCollection services, T fasPaymentProcessor) where T : IFasPaymentProcessor
+    public static void RegisterDefaultPaymentProvider<T>(IServiceCollection services) where T : IFasPaymentProcessor
     {
-        services.AddScoped(typeof(IFasPaymentProcessor), fasPaymentProcessor.GetType());
+        services.AddScoped(typeof(IFasPaymentProcessor), typeof(T));
     }
 
     ///// <summary>
