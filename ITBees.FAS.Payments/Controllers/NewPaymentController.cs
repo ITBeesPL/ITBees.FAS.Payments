@@ -14,24 +14,34 @@ public class NewPaymentController : RestfulControllerBase<NewPaymentController>
         _paymentProcessor = paymentProcessor;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="newPaymentIm"></param>
+    /// <returns></returns>
+    [Produces(typeof(InitialisedPaymentLinkVm))]
+    [HttpPost]
     public IActionResult Post([FromBody] NewPaymentIm newPaymentIm)
     {
-        _paymentProcessor.CreatePaymentSession(new FasPayment()
+
+        var sessionUrl = _paymentProcessor.CreatePaymentSession(new FasPayment()
         {
             Mode = FasPaymentMode.Subscription,
             Products = new List<FasProduct>()
-        });
+            {
+                new FasProduct()
+                {
+                    BillingPeriod = FasBillingPeriod.Monthly,
+                    Currency = newPaymentIm.Currency,
+                    Quantity = newPaymentIm.Quantity,
+                    PaymentTitleOrProductName = newPaymentIm.ProductName,
+                    Price = newPaymentIm.Price,
+                    Interval = newPaymentIm.Interval,
+                    IntervalCount = newPaymentIm.IntervalCount
+                }
+            }
+        }).SessionUrl;
 
-        return Ok();
+        return Ok(new InitialisedPaymentLinkVm(sessionUrl));
     }
-}
-
-public class NewPaymentIm
-{
-    public Guid CompanyGuid{ get; set; }
-    public decimal Price { get; set; }
-    public Guid Type { get; set; }
-    public long Quantity { get; set; }
-    public string ProductName { get; set; }
-    public Guid CustomerGuid { get; set; }
 }
