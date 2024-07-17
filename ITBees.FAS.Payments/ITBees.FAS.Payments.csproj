@@ -16,7 +16,7 @@
   </ItemGroup>  
   
   <ItemGroup>
-    <PackageReference Include="ITBees.RestfulApiControllers" Version="8.0.11" />
+    <PackageReference Include="ITBees.RestfulApiControllers" Version="8.0.12" />
   </ItemGroup>  
   
   <ItemGroup>
