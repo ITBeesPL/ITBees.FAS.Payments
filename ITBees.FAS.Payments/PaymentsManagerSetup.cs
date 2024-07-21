@@ -1,4 +1,5 @@
 ﻿using ITBees.FAS.Payments.Interfaces;
+using ITBees.FAS.Payments.Interfaces.Models;
 using ITBees.FAS.Setup;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -28,5 +29,13 @@ public class PaymentsManagerSetup : IFasDependencyRegistrationWithGenerics
     public void Register<TContext, TIdentityUser>(IServiceCollection services, IConfigurationRoot configurationRoot) where TContext : DbContext where TIdentityUser : IdentityUser, new()
     {
         services.AddScoped<IFasPaymentManager, FasPaymentManager>();
+    }
+
+    public static void RegisterDbModels(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<SelectedSubscriptionPlan>().HasKey(x => x.Guid);
+        modelBuilder.Entity<SelectedSubscriptionPlan>().HasOne(x => x.PlatformSubscriptionPlan);
+        modelBuilder.Entity<PlatformSubscriptionPlan>().HasKey(x => x.Guid);
+        modelBuilder.Entity<InvoiceData>().HasKey(x => x.Guid);
     }
 }
