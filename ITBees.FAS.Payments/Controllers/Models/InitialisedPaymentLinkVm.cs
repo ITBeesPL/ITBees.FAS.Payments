@@ -1,4 +1,4 @@
-﻿namespace ITBees.FAS.Payments.Controllers;
+﻿namespace ITBees.FAS.Payments.Controllers.Models;
 
 public class InitialisedPaymentLinkVm
 {

@@ -1,4 +1,5 @@
-﻿using ITBees.FAS.Payments.Interfaces;
+﻿using ITBees.FAS.Payments.Controllers.Models;
+using ITBees.FAS.Payments.Interfaces;
 using ITBees.RestfulApiControllers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
