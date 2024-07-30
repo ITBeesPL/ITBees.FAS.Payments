@@ -4,6 +4,7 @@ namespace ITBees.FAS.Payments.Controllers.Models;
 
 public class PlatformSubscriptionPlanVm
 {
+    public PlatformSubscriptionPlanVm() { }
     public PlatformSubscriptionPlanVm(PlatformSubscriptionPlan x)
     {
         this.Guid = x.Guid;
