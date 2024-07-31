@@ -46,6 +46,6 @@ public class PaymentsManagerSetup : IFasDependencyRegistrationWithGenerics
         modelBuilder.Entity<PlanFeature>().HasKey(x => x.Id);
         modelBuilder.Entity<PlanFeature>().HasOne(x=>x.PlatformFeature);
         modelBuilder.Entity<PlatformFeature>().HasKey(x => x.Id);
-        
+        modelBuilder.Entity<PaymentSession>().HasKey(x => x.Guid);
     }
 }

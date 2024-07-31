@@ -8,10 +8,14 @@ namespace ITBees.FAS.Payments.Controllers;
 
 public class NewPaymentController : RestfulControllerBase<NewPaymentController>
 {
+    private readonly IPaymentSessionService _paymentSessionService;
     private readonly IFasPaymentProcessor _paymentProcessor;
 
-    public NewPaymentController(ILogger<NewPaymentController> logger, IFasPaymentProcessor paymentProcessor) : base(logger)
+    public NewPaymentController(ILogger<NewPaymentController> logger, 
+        IPaymentSessionService paymentSessionService, 
+        IFasPaymentProcessor paymentProcessor) : base(logger)
     {
+        _paymentSessionService = paymentSessionService;
         _paymentProcessor = paymentProcessor;
     }
 
@@ -25,24 +29,8 @@ public class NewPaymentController : RestfulControllerBase<NewPaymentController>
     public IActionResult Post([FromBody] NewPaymentIm newPaymentIm)
     {
 
-        var sessionUrl = _paymentProcessor.CreatePaymentSession(new FasPayment()
-        {
-            Mode = FasPaymentMode.Subscription,
-            Products = new List<FasProduct>()
-            {
-                new FasProduct()
-                {
-                    BillingPeriod = FasBillingPeriod.Monthly,
-                    Currency = newPaymentIm.Currency,
-                    Quantity = newPaymentIm.Quantity,
-                    PaymentTitleOrProductName = newPaymentIm.ProductName,
-                    Price = newPaymentIm.Price,
-                    Interval = newPaymentIm.Interval,
-                    IntervalCount = newPaymentIm.IntervalCount
-                }
-            }
-        }).SessionUrl;
+        var result = _paymentSessionService.CreateNewPaymentSession(newPaymentIm);
 
-        return Ok(new InitialisedPaymentLinkVm(sessionUrl));
+        return Ok(result);
     }
 }
