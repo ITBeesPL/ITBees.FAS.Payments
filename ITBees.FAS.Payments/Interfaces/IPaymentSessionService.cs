@@ -6,4 +6,5 @@ namespace ITBees.FAS.Payments.Interfaces;
 public interface IPaymentSessionService
 {
     InitialisedPaymentLinkVm CreateNewPaymentSession(NewPaymentIm newPaymentIm);
+    bool ConfirmPayment(Guid paymentSessionGuid);
 }

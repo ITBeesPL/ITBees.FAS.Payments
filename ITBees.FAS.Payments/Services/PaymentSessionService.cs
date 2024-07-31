@@ -54,4 +54,9 @@ public class PaymentSessionService : IPaymentSessionService
 
         return new InitialisedPaymentLinkVm(sessionUrl.SessionUrl);
     }
+
+    public bool ConfirmPayment(Guid paymentSessionGuid)
+    {
+        return _paymentProcessor.ConfirmPayment(paymentSessionGuid);
+    }
 }

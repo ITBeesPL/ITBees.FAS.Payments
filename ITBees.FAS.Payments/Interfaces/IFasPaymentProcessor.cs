@@ -3,4 +3,5 @@
 public interface IFasPaymentProcessor
 {
     FasActivePaymentSession CreatePaymentSession(FasPayment fasPayment);
+    bool ConfirmPayment(Guid paymentSessionGuid);
 }
