@@ -32,6 +32,7 @@ public class PaymentsManagerSetup : IFasDependencyRegistrationWithGenerics
     {
         services.AddScoped<IFasPaymentManager, FasPaymentManager>();
         services.AddScoped<IPlatformAvailableSubscriptionPlansService, PlatformAvailableSubscriptionPlansService>();
+        services.AddScoped<IPaymentSessionService, PaymentSessionService>();
         services.AddScoped<ISubscriptionPlansService, SelectedSubscriptionPlansService>();
         services.AddScoped<IInvoiceDataService, InvoiceDataService>();
     }
