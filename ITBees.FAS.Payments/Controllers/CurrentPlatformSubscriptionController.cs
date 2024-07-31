@@ -1,6 +1,5 @@
 ﻿using ITBees.FAS.Payments.Controllers.Models;
 using ITBees.FAS.Payments.Interfaces;
-using ITBees.FAS.Payments.Subscriptions;
 using ITBees.RestfulApiControllers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -43,5 +42,3 @@ public class CurrentPlatformSubscriptionController : RestfulControllerBase<Curre
         return ReturnOkResult(() => _subscriptionPlansService.Delete(selectedSubscriptionPlanGuid));
     }
 }
-
-

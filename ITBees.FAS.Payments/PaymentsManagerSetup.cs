@@ -41,6 +41,11 @@ public class PaymentsManagerSetup : IFasDependencyRegistrationWithGenerics
         modelBuilder.Entity<SelectedSubscriptionPlan>().HasKey(x => x.Guid);
         modelBuilder.Entity<SelectedSubscriptionPlan>().HasOne(x => x.PlatformSubscriptionPlan);
         modelBuilder.Entity<PlatformSubscriptionPlan>().HasKey(x => x.Guid);
+        modelBuilder.Entity<PlatformSubscriptionPlan>().HasMany(x => x.PlanFeatures).WithOne(x=>x.PlatformSubscriptionPlan);
         modelBuilder.Entity<InvoiceData>().HasKey(x => x.Guid);
+        modelBuilder.Entity<PlanFeature>().HasKey(x => x.Id);
+        modelBuilder.Entity<PlanFeature>().HasOne(x=>x.PlatformFeature);
+        modelBuilder.Entity<PlatformFeature>().HasKey(x => x.Id);
+        
     }
 }
