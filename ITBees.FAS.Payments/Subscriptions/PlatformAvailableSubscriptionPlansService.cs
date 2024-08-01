@@ -44,7 +44,7 @@ class PlatformAvailableSubscriptionPlansService : IPlatformAvailableSubscription
 
     public List<PlatformSubscriptionPlanVm> GetAllActivePlans()
     {
-        var result = _roRepo.GetData(x => x.IsActive).ToList();
+        var result = _roRepo.GetData(x => x.IsActive, x=>x.PlanFeatures).ToList();
 
         return Enumerable.ToList<PlatformSubscriptionPlanVm>(result.Select(x=>new PlatformSubscriptionPlanVm(x)));
     }
