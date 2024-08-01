@@ -61,4 +61,13 @@ public class PaymentSessionService : IPaymentSessionService
     {
         return _paymentProcessor.ConfirmPayment(paymentSessionGuid);
     }
+
+    public void CancelPayment(Guid paymentSessionGuid)
+    {
+        _paymentSessionRwRepo.UpdateData(x => x.Guid == paymentSessionGuid && x.Finished == false, x =>
+        {
+            x.Finished = true;
+            x.Success = false;
+        });
+    }
 }

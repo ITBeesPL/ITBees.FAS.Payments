@@ -7,4 +7,5 @@ public interface IPaymentSessionService
 {
     InitialisedPaymentLinkVm CreateNewPaymentSession(NewPaymentIm newPaymentIm);
     bool ConfirmPayment(Guid paymentSessionGuid);
+    void CancelPayment(Guid paymentSessionGuid);
 }
