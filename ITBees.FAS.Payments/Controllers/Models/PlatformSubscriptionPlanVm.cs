@@ -15,7 +15,10 @@ public class PlatformSubscriptionPlanVm
         this.IsOneTimePayment = x.IsOneTimePayment;
         this.PlanName = x.PlanName;
         this.GroupName = x.GroupName;
+        this.PlanFeatures = x.PlanFeatures.Select(x => new PlanFeatureVm(x)).ToList();
     }
+
+    public List<PlanFeatureVm> PlanFeatures { get; set; }
 
     public string GroupName { get; set; }
     public Guid Guid { get; set; }

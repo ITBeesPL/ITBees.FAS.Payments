@@ -1,8 +1,8 @@
-namespace ITBees.FAS.Payments.Interfaces.Models;
+﻿
+namespace ITBees.FAS.Payments.Controllers.Models;
 
-public class PlatformFeature
+public class PlatformFeatureIm
 {
-    public int Id { get; set; }
     public string FeatureName { get; set; }
     public string? FeatureDescription { get; set; }
     public bool IsVisible { get; set; }
