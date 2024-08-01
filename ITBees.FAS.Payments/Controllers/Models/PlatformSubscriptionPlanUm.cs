@@ -10,4 +10,5 @@ public class PlatformSubscriptionPlanUm
     public bool IsOneTimePayment { get; set; }
     public string PlanName { get; set; }
     public string GroupName { get; set; }
+    public string Title { get; set; }
 }
