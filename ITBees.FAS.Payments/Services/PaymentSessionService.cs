@@ -29,7 +29,8 @@ public class PaymentSessionService : IPaymentSessionService
             Created = DateTime.Now,
             CreatedByGuid = _aspCurrentUserService.GetCurrentUserGuid(),
             Success = false,
-            Finished = false
+            Finished = false,
+            PaymentOperator = _paymentProcessor.GetType().Name
         };
 
         var paymentSession = _paymentSessionRwRepo.InsertData(newPaymentSession);
