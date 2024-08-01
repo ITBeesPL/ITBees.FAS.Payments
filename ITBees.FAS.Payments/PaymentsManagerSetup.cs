@@ -38,6 +38,8 @@ public class PaymentsManagerSetup : IFasDependencyRegistrationWithGenerics
         services.AddScoped<IPlatformFeatureService, PlatformFeatureService>();
         services.AddScoped<IPlanFeatureService, PlanFeatureService>();
         services.AddScoped<IReassignSubscriptionPlansToAvailablePlatformPlans, ReassignSubscriptionPlansToAvailablePlatformPlans>();
+        services.AddScoped<IPaymentSubscriptionService, PaymentSubscriptionService>();
+        services.AddScoped<IPaymentSessionCreator, PaymentSessionCreator>();
     }
 
     public static void RegisterDbModels(ModelBuilder modelBuilder)

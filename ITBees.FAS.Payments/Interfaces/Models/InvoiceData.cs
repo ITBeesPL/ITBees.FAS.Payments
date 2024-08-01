@@ -23,4 +23,6 @@ public class InvoiceData
     public Guid? ModifiedByGuid { get; set; }
     public PlatformSubscriptionPlan SubscriptionPlan { get; set; }
     public Guid? SubscriptionPlanGuid { get; set; }
+    public bool IsActive { get; set; }
+    public bool InvoiceRequested { get; set; }
 }

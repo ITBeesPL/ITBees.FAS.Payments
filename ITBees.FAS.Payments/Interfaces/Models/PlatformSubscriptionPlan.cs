@@ -1,3 +1,4 @@
+using ITBees.Models.Languages;
 using ITBees.Models.Users;
 
 namespace ITBees.FAS.Payments.Interfaces.Models;
@@ -22,4 +23,7 @@ public class PlatformSubscriptionPlan
     public string? PlanDescription { get; set; }
     public string? ButtonText { get; set; }
     public string? BadgeText { get; set; }
+    public Language Language { get; set; }
+    public int? LanguageId { get; set; }
+    public string Currency { get; set; }
 }

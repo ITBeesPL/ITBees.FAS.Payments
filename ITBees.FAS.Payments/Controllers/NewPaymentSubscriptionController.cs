@@ -10,15 +10,12 @@ namespace ITBees.FAS.Payments.Controllers;
 [Authorize]
 public class NewPaymentSubscriptionController : RestfulControllerBase<NewPaymentSubscriptionController>
 {
-    private readonly IPaymentSessionService _paymentSessionService;
-    private readonly IFasPaymentProcessor _paymentProcessor;
+    private readonly IPaymentSubscriptionService _paymentSubscriptionService;
 
     public NewPaymentSubscriptionController(ILogger<NewPaymentSubscriptionController> logger,
-        IPaymentSessionService paymentSessionService,
-        IFasPaymentProcessor paymentProcessor) : base(logger)
+        IPaymentSubscriptionService paymentSubscriptionService) : base(logger)
     {
-        _paymentSessionService = paymentSessionService;
-        _paymentProcessor = paymentProcessor;
+        _paymentSubscriptionService = paymentSubscriptionService;
     }
 
     /// <summary>
@@ -31,7 +28,7 @@ public class NewPaymentSubscriptionController : RestfulControllerBase<NewPayment
     public IActionResult Post([FromBody] NewPaymentSubscriptionIm newPaymentSubscriptionIm)
     {
 
-        InitialisedPaymentLinkVm result = _paymentSessionService.CreateNewPaymentSubscriptionSession(newPaymentSubscriptionIm);
+        InitialisedPaymentLinkVm result = _paymentSubscriptionService.CreateNewPaymentSubscriptionSession(newPaymentSubscriptionIm);
 
         return Ok(result);
     }

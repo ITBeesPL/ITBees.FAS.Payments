@@ -1,5 +1,4 @@
-﻿using ITBees.FAS.Payments.Controllers;
-using ITBees.FAS.Payments.Controllers.Models;
+﻿using ITBees.FAS.Payments.Controllers.Models;
 using ITBees.FAS.Payments.Interfaces;
 using ITBees.FAS.Payments.Interfaces.Models;
 using ITBees.Interfaces.Repository;
@@ -12,33 +11,28 @@ public class PaymentSessionService : IPaymentSessionService
     private readonly IWriteOnlyRepository<PaymentSession> _paymentSessionRwRepo;
     private readonly IAspCurrentUserService _aspCurrentUserService;
     private readonly IFasPaymentProcessor _paymentProcessor;
+    private readonly IPaymentSessionCreator _paymentSessionCreator;
 
     public PaymentSessionService(IWriteOnlyRepository<PaymentSession> paymentSessionRwRepo,
         IAspCurrentUserService aspCurrentUserService,
-        IFasPaymentProcessor paymentProcessor)
+        IFasPaymentProcessor paymentProcessor,
+        IPaymentSessionCreator paymentSessionCreator)
     {
         _paymentSessionRwRepo = paymentSessionRwRepo;
         _aspCurrentUserService = aspCurrentUserService;
         _paymentProcessor = paymentProcessor;
+        _paymentSessionCreator = paymentSessionCreator;
     }
 
 
     public InitialisedPaymentLinkVm CreateNewPaymentSession(NewPaymentIm newPaymentIm)
     {
-        var newPaymentSession = new PaymentSession()
-        {
-            Created = DateTime.Now,
-            CreatedByGuid = _aspCurrentUserService.GetCurrentUserGuid(),
-            Success = false,
-            Finished = false,
-            PaymentOperator = _paymentProcessor.GetType().Name
-        };
-
-        var paymentSession = _paymentSessionRwRepo.InsertData(newPaymentSession);
+        var currentUserGuid = _aspCurrentUserService.GetCurrentUserGuid();
+        PaymentSession paymentSession = _paymentSessionCreator.CreateNew(Created: DateTime.Now, currentUserGuid, _paymentProcessor);
 
         var sessionUrl = _paymentProcessor.CreatePaymentSession(new FasPayment()
         {
-            PaymentSessionGuid = newPaymentSession.Guid,
+            PaymentSessionGuid = paymentSession.Guid,
             Mode = FasPaymentMode.Subscription,
             Products = new List<FasProduct>()
          {
@@ -70,10 +64,5 @@ public class PaymentSessionService : IPaymentSessionService
             x.Finished = true;
             x.Success = false;
         });
-    }
-
-    public InitialisedPaymentLinkVm CreateNewPaymentSubscriptionSession(NewPaymentSubscriptionIm newPaymentSubscriptionIm)
-    {
-        throw new NotImplementedException();
     }
 }
