@@ -25,5 +25,5 @@ public class PlatformSubscriptionPlan
     public string? BadgeText { get; set; }
     public Language Language { get; set; }
     public int? LanguageId { get; set; }
-    public string Currency { get; set; }
+    public string? Currency { get; set; }
 }
