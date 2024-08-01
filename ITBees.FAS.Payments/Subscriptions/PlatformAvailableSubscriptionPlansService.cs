@@ -3,6 +3,7 @@ using ITBees.FAS.Payments.Interfaces;
 using ITBees.FAS.Payments.Interfaces.Models;
 using ITBees.Interfaces.Repository;
 using ITBees.UserManager.Interfaces.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace ITBees.FAS.Payments.Subscriptions;
 
@@ -44,7 +45,9 @@ class PlatformAvailableSubscriptionPlansService : IPlatformAvailableSubscription
 
     public List<PlatformSubscriptionPlanVm> GetAllActivePlans()
     {
-        var result = _platformSubscriptionPlanRoPlan.GetData(x => x.IsActive, x=>x.PlanFeatures).ToList();
+        var result = _platformSubscriptionPlanRoPlan
+            .GetDataQueryable(x => x.IsActive, 
+                x=>x.PlanFeatures).Include(x=>x.PlanFeatures).ThenInclude(x=>x.PlatformFeature).ToList();
 
         return result.Select(x=>new PlatformSubscriptionPlanVm(x)).ToList();
     }

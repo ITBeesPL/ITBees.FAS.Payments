@@ -64,4 +64,10 @@ public class PlatformFeatureService : IPlatformFeatureService
     {
         _platformFeatureRwRepo.DeleteData(x => x.Id == id);
     }
+
+    public List<PlatformFeatureVm> GetAll()
+    {
+        var platformFeatureVms = _platformFeatureRoRepo.GetData(x => x.IsVisible).Select(x => new PlatformFeatureVm(x)).ToList();
+        return platformFeatureVms;
+    }
 }

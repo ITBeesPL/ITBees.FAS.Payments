@@ -8,4 +8,5 @@ public interface IPlatformFeatureService
     PlatformFeatureVm Get(int id);
     PlatformFeatureVm Update(PlatformFeatureUm platformFeatureUm);
     void Delete(int id);
+    List<PlatformFeatureVm> GetAll();
 }
