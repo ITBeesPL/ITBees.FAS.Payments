@@ -7,6 +7,7 @@ public class PlatformSubscriptionPlanVm
     public PlatformSubscriptionPlanVm() { }
     public PlatformSubscriptionPlanVm(PlatformSubscriptionPlan x)
     {
+        this.Title = x.Title;
         this.Guid = x.Guid;
         this.Value = x.Value;
         this.Expires = x.Expires;
@@ -17,6 +18,8 @@ public class PlatformSubscriptionPlanVm
         this.GroupName = x.GroupName;
         this.PlanFeatures = x.PlanFeatures.Select(x => new PlanFeatureVm(x)).ToList();
     }
+
+    public string Title { get; set; }
 
     public List<PlanFeatureVm> PlanFeatures { get; set; }
 
