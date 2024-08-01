@@ -11,4 +11,5 @@ public class InvoiceDataIm
     public string PostCode { get; set; }
     public string InvoiceEmail { get; set; }
     public Guid SubscriptionPlanGuid { get; set; }
+    public bool InvoiceRequested { get; set; }
 }

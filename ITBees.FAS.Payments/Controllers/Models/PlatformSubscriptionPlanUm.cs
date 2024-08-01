@@ -16,4 +16,6 @@ public class PlatformSubscriptionPlanUm
     public string? PlanDescription { get; set; }
     public string? ButtonText { get; set; }
     public string? BadgeText { get; set; }
+    public int LanguageId { get; set; }
+    public string Currency { get; set; }
 }

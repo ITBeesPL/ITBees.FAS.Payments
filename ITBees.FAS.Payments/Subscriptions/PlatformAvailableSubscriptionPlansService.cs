@@ -78,6 +78,8 @@ class PlatformAvailableSubscriptionPlansService : IPlatformAvailableSubscription
             x.PlanDescription = selectedSubscriptionPlanIm.PlanDescription;
             x.ButtonText = selectedSubscriptionPlanIm.ButtonText;
             x.BadgeText = selectedSubscriptionPlanIm.BadgeText;
+            x.LanguageId = selectedSubscriptionPlanIm.LanguageId;
+            x.Currency = selectedSubscriptionPlanIm.Currency;
         }, plan => plan.CreatedBy).First();
 
         return new PlatformSubscriptionPlanVm(result);

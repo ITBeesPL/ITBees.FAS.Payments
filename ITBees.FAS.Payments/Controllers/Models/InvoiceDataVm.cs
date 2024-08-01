@@ -6,7 +6,7 @@ public class InvoiceDataVm
 {
     public InvoiceDataVm()
     {
-        
+
     }
     public InvoiceDataVm(InvoiceData x)
     {
@@ -21,8 +21,10 @@ public class InvoiceDataVm
         InvoiceEmail = x.InvoiceEmail;
         SubscriptionPlan = x.SubscriptionPlan?.PlanName;
         SubscriptionPlanGuid = x.SubscriptionPlan?.Guid;
+        InvoiceRequested = x.InvoiceRequested;
     }
 
+    public bool InvoiceRequested { get; set; }
     public Guid? SubscriptionPlanGuid { get; set; }
 
     public string SubscriptionPlan { get; set; }
