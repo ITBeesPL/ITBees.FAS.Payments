@@ -8,23 +8,23 @@ namespace ITBees.FAS.Payments.Subscriptions;
 
 class PlatformAvailableSubscriptionPlansService : IPlatformAvailableSubscriptionPlansService
 {
-    private readonly IWriteOnlyRepository<PlatformSubscriptionPlan> _rwRepo;
-    private readonly IReadOnlyRepository<PlatformSubscriptionPlan> _roRepo;
+    private readonly IWriteOnlyRepository<PlatformSubscriptionPlan> _platformSubscriptionPlanRwRepo;
+    private readonly IReadOnlyRepository<PlatformSubscriptionPlan> _platformSubscriptionPlanRoPlan;
     private readonly IAspCurrentUserService _aspCurrentUserService;
 
-    public PlatformAvailableSubscriptionPlansService(IWriteOnlyRepository<PlatformSubscriptionPlan> rwRepo,
-        IReadOnlyRepository<PlatformSubscriptionPlan> roRepo,
+    public PlatformAvailableSubscriptionPlansService(IWriteOnlyRepository<PlatformSubscriptionPlan> platformSubscriptionPlanRwRepo,
+        IReadOnlyRepository<PlatformSubscriptionPlan> platformSubscriptionPlanRoPlan,
         IAspCurrentUserService aspCurrentUserService)
     {
-        _rwRepo = rwRepo;
-        _roRepo = roRepo;
+        _platformSubscriptionPlanRwRepo = platformSubscriptionPlanRwRepo;
+        _platformSubscriptionPlanRoPlan = platformSubscriptionPlanRoPlan;
         _aspCurrentUserService = aspCurrentUserService;
     }
     public PlatformSubscriptionPlanVm CreateNew(PlatformSubscriptionPlanIm selectedSubscriptionPlanIm)
     {
         //todo security - check user can create plan for this company
         var currentUser = _aspCurrentUserService.GetCurrentUser();
-        var result = _rwRepo.InsertData(new PlatformSubscriptionPlan()
+        var result = _platformSubscriptionPlanRwRepo.InsertData(new PlatformSubscriptionPlan()
         {
             Value = selectedSubscriptionPlanIm.Value,
             Created = DateTime.Now,
@@ -37,23 +37,23 @@ class PlatformAvailableSubscriptionPlansService : IPlatformAvailableSubscription
             GroupName = selectedSubscriptionPlanIm.GroupName
         });
 
-        var resultData = _roRepo.GetData(x => x.Guid == result.Guid, x => x.CreatedBy).First();
+        var resultData = _platformSubscriptionPlanRoPlan.GetData(x => x.Guid == result.Guid, x => x.CreatedBy).First();
 
         return new PlatformSubscriptionPlanVm(resultData);
     }
 
     public List<PlatformSubscriptionPlanVm> GetAllActivePlans()
     {
-        var result = _roRepo.GetData(x => x.IsActive, x=>x.PlanFeatures).ToList();
+        var result = _platformSubscriptionPlanRoPlan.GetData(x => x.IsActive, x=>x.PlanFeatures).ToList();
 
-        return Enumerable.ToList<PlatformSubscriptionPlanVm>(result.Select(x=>new PlatformSubscriptionPlanVm(x)));
+        return result.Select(x=>new PlatformSubscriptionPlanVm(x)).ToList();
     }
 
     public PlatformSubscriptionPlanVm Update(PlatformSubscriptionPlanUm selectedSubscriptionPlanIm)
     {
         //todo security - check user can create plan for this company
         var currentUser = _aspCurrentUserService.GetCurrentUser();
-        var result = _rwRepo.UpdateData(x => x.Guid == selectedSubscriptionPlanIm.Guid, x =>
+        var result = _platformSubscriptionPlanRwRepo.UpdateData(x => x.Guid == selectedSubscriptionPlanIm.Guid, x =>
         {
             x.Value = selectedSubscriptionPlanIm.Value;
             x.Expires = selectedSubscriptionPlanIm.Expires;
@@ -72,13 +72,13 @@ class PlatformAvailableSubscriptionPlansService : IPlatformAvailableSubscription
     {
         //todo security - check user can create plan for this company
         var currentUser = _aspCurrentUserService.GetCurrentUser();
-        var result = _rwRepo.DeleteData(x => x.Guid == platformSubscriptionPlanGuid);
+        var result = _platformSubscriptionPlanRwRepo.DeleteData(x => x.Guid == platformSubscriptionPlanGuid);
     }
 
     public PlatformSubscriptionPlanVm Get(Guid selectedSubscriptionPlanGuid)
     {
         //todo security - check user can create plan for this company
-        var result = _roRepo.GetData(x => x.Guid == selectedSubscriptionPlanGuid).First();
+        var result = _platformSubscriptionPlanRoPlan.GetData(x => x.Guid == selectedSubscriptionPlanGuid).First();
 
         return new PlatformSubscriptionPlanVm(result);
     }

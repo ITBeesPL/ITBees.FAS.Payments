@@ -10,7 +10,13 @@ public class PlatformFeatureVm
         FeatureName = x.FeatureName;
         Id = x.Id;
         IsVisible = x.IsVisible;
+        FeatureValueDescription = x.FeatureValueDescription;
+        GroupName = x.GroupName;
     }
+
+    public string? GroupName { get; set; }
+
+    public string? FeatureValueDescription { get; set; }
 
     public bool IsVisible { get; set; }
 

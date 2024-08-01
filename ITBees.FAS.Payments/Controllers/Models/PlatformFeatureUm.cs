@@ -6,4 +6,7 @@ public class PlatformFeatureUm
     public string? FeatureDescription { get; set; }
     public string FeatureName { get; set; }
     public bool IsVisible { get; set; }
+    public string? GroupName { get; set; }
+
+    public string? FeatureValueDescription { get; set; }
 }

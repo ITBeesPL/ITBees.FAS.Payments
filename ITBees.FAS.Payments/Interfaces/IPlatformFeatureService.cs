@@ -2,7 +2,7 @@
 
 namespace ITBees.FAS.Payments.Interfaces;
 
-public interface IPlatformFeautreService
+public interface IPlatformFeatureService
 {
     PlatformFeatureVm Create(PlatformFeatureIm platformFeatureIm);
     PlatformFeatureVm Get(int id);

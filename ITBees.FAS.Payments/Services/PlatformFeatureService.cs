@@ -7,7 +7,7 @@ using ITBees.UserManager.Interfaces.Services;
 
 namespace ITBees.FAS.Payments.Services;
 
-public class PlatformFeatureService : IPlatformFeautreService
+public class PlatformFeatureService : IPlatformFeatureService
 {
     private readonly IAspCurrentUserService _aspCurrentUserService;
     private readonly IWriteOnlyRepository<PlatformFeature> _platformFeatureRwRepo;
@@ -28,7 +28,9 @@ public class PlatformFeatureService : IPlatformFeautreService
         {
             FeatureName = x.FeatureName,
             FeatureDescription = x.FeatureDescription,
-            IsVisible = x.IsVisible
+            IsVisible = x.IsVisible, 
+            FeatureValueDescription = x.FeatureValueDescription,
+            GroupName = x.GroupName,
         };
 
         var result = _platformFeatureRwRepo.InsertData(pf);

@@ -11,38 +11,38 @@ namespace ITBees.FAS.Payments.Controllers;
 [Authorize(Roles = Role.PlatformOperator)]
 public class PlatformFeatureController : RestfulControllerBase<PlatformFeatureController>
 {
-    private readonly IPlatformFeautreService _platformFeautreService;
+    private readonly IPlatformFeatureService _platformFeatureService;
 
     public PlatformFeatureController(ILogger<PlatformFeatureController> logger,
-        IPlatformFeautreService platformFeautreService) : base(logger)
+        IPlatformFeatureService platformFeatureService) : base(logger)
     {
-        _platformFeautreService = platformFeautreService;
+        _platformFeatureService = platformFeatureService;
     }
 
     [HttpPost]
     [Produces(typeof(PlatformFeatureVm))]
     public IActionResult Post([FromBody] PlatformFeatureIm platformFeatureIm)
     {
-        return ReturnOkResult(()=>_platformFeautreService.Create(platformFeatureIm));
+        return ReturnOkResult(()=>_platformFeatureService.Create(platformFeatureIm));
     }
 
     [HttpGet]
     [Produces(typeof(PlatformFeatureVm))]
     public IActionResult Get(int id)
     {
-        return ReturnOkResult(() => _platformFeautreService.Get(id));
+        return ReturnOkResult(() => _platformFeatureService.Get(id));
     }
 
     [HttpPut]
     [Produces(typeof(PlatformFeatureVm))]
     public IActionResult Put([FromBody] PlatformFeatureUm platformFeatureUm)
     {
-        return ReturnOkResult(() => _platformFeautreService.Update(platformFeatureUm));
+        return ReturnOkResult(() => _platformFeatureService.Update(platformFeatureUm));
     }
 
     [HttpDelete]
     public IActionResult Delete(int id)
     {
-        return ReturnOkResult(() => _platformFeautreService.Delete(id));
+        return ReturnOkResult(() => _platformFeatureService.Delete(id));
     }
 }
