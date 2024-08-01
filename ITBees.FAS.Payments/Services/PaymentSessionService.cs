@@ -37,6 +37,7 @@ public class PaymentSessionService : IPaymentSessionService
 
         var sessionUrl = _paymentProcessor.CreatePaymentSession(new FasPayment()
         {
+            PaymentSessionGuid = newPaymentSession.Guid,
             Mode = FasPaymentMode.Subscription,
             Products = new List<FasProduct>()
          {
