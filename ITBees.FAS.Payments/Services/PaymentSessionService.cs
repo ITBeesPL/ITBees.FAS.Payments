@@ -1,4 +1,5 @@
-﻿using ITBees.FAS.Payments.Controllers.Models;
+﻿using ITBees.FAS.Payments.Controllers;
+using ITBees.FAS.Payments.Controllers.Models;
 using ITBees.FAS.Payments.Interfaces;
 using ITBees.FAS.Payments.Interfaces.Models;
 using ITBees.Interfaces.Repository;
@@ -69,5 +70,10 @@ public class PaymentSessionService : IPaymentSessionService
             x.Finished = true;
             x.Success = false;
         });
+    }
+
+    public InitialisedPaymentLinkVm CreateNewPaymentSubscriptionSession(NewPaymentSubscriptionIm newPaymentSubscriptionIm)
+    {
+        throw new NotImplementedException();
     }
 }

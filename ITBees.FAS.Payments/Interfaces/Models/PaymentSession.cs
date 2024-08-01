@@ -12,4 +12,6 @@ public class PaymentSession
     public bool Success { get; set; }
     public string? Message { get; set; }
     public string PaymentOperator { get; set; }
+    public InvoiceData InvoiceData { get; set; }
+    public Guid? InvoiceDataGuid { get; set; }
 }

@@ -17,4 +17,6 @@ public class NewPaymentIm
     /// maximum number of repetitions is 3 years
     /// </summary>
     public int IntervalCount { get; set; }
+
+    public Guid InvoiceDataGuid { get; set; }
 }
