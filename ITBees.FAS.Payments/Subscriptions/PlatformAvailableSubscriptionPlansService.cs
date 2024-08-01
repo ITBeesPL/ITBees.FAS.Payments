@@ -59,7 +59,7 @@ class PlatformAvailableSubscriptionPlansService : IPlatformAvailableSubscription
         var result = _platformSubscriptionPlanRwRepo.UpdateData(x => x.Guid == selectedSubscriptionPlanIm.Guid, x =>
         {
             x.Value = selectedSubscriptionPlanIm.Value;
-            x.Title = selectedSubscriptionPlanIm.Title,
+            x.Title = selectedSubscriptionPlanIm.Title;
             x.Expires = selectedSubscriptionPlanIm.Expires;
             x.Interval = selectedSubscriptionPlanIm.Interval;
             x.IsActive = selectedSubscriptionPlanIm.IsActive;
