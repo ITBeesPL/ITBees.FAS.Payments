@@ -10,4 +10,9 @@ public class PlatformSubscriptionPlanIm
     public string PlanName { get; set; }
     public string GroupName { get; set; }
     public string Title { get; set; }
+    public int Position { get; set; }
+    public bool MostPopular { get; set; }
+    public string? PlanDescription { get; set; }
+    public string? ButtonText { get; set; }
+    public string? BadgeText { get; set; }
 }

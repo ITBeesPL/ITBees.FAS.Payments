@@ -36,8 +36,13 @@ class PlatformAvailableSubscriptionPlansService : IPlatformAvailableSubscription
             IsOneTimePayment = selectedSubscriptionPlanIm.IsOneTimePayment,
             PlanName = selectedSubscriptionPlanIm.PlanName,
             GroupName = selectedSubscriptionPlanIm.GroupName,
-            Title = selectedSubscriptionPlanIm.Title
-        });
+            Title = selectedSubscriptionPlanIm.Title,
+            Position = selectedSubscriptionPlanIm.Position,
+            MostPopular = selectedSubscriptionPlanIm.MostPopular,
+            PlanDescription = selectedSubscriptionPlanIm.PlanDescription,
+            ButtonText = selectedSubscriptionPlanIm.ButtonText,
+            BadgeText = selectedSubscriptionPlanIm.BadgeText,
+    });
 
         var resultData = _platformSubscriptionPlanRoPlan.GetData(x => x.Guid == result.Guid, x => x.CreatedBy).First();
 
@@ -68,6 +73,11 @@ class PlatformAvailableSubscriptionPlansService : IPlatformAvailableSubscription
             x.PlanName = selectedSubscriptionPlanIm.PlanName;
             x.GroupName = selectedSubscriptionPlanIm.GroupName;
             x.Title = selectedSubscriptionPlanIm.Title;
+            x.Position = selectedSubscriptionPlanIm.Position;
+            x.MostPopular = selectedSubscriptionPlanIm.MostPopular;
+            x.PlanDescription = selectedSubscriptionPlanIm.PlanDescription;
+            x.ButtonText = selectedSubscriptionPlanIm.ButtonText;
+            x.BadgeText = selectedSubscriptionPlanIm.BadgeText;
         }, plan => plan.CreatedBy).First();
 
         return new PlatformSubscriptionPlanVm(result);

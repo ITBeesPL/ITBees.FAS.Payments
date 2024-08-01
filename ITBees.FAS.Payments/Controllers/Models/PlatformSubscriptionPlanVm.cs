@@ -17,7 +17,22 @@ public class PlatformSubscriptionPlanVm
         this.PlanName = x.PlanName;
         this.GroupName = x.GroupName;
         this.PlanFeatures = x.PlanFeatures.Select(x => new PlanFeatureVm(x)).ToList();
+        Position = x.Position;
+        MostPopular = x.MostPopular;
+        PlanDescription = x.PlanDescription;
+        ButtonText = x.ButtonText;
+        BadgeText = x.BadgeText;
     }
+
+    public string? BadgeText { get; set; }
+
+    public string? ButtonText { get; set; }
+
+    public string? PlanDescription { get; set; }
+
+    public bool MostPopular { get; set; }
+
+    public int Position { get; set; }
 
     public string Title { get; set; }
 
