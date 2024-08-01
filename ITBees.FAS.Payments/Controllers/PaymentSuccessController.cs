@@ -1,4 +1,5 @@
-﻿using ITBees.FAS.Payments.Interfaces;
+﻿using ITBees.FAS.Payments.Controllers.Models;
+using ITBees.FAS.Payments.Interfaces;
 using ITBees.RestfulApiControllers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -14,14 +15,10 @@ public class PaymentSuccessController : RestfulControllerBase<PaymentSuccessCont
         _paymentSessionService = paymentSessionService;
     }
 
-    [Produces<PaymnetSessionConfirmationVm>]
+    [HttpGet]
+    [Produces<PaymentSessionConfirmationVm>]
     public IActionResult Get(Guid paymentSessionGuid)
     {
         return ReturnOkResult(() => _paymentSessionService.ConfirmPayment(paymentSessionGuid));
     }
-}
-
-public class PaymnetSessionConfirmationVm
-{
-    public bool Success  { get; set; }
 }

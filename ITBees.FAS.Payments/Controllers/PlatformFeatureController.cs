@@ -19,25 +19,28 @@ public class PlatformFeatureController : RestfulControllerBase<PlatformFeatureCo
         _platformFeautreService = platformFeautreService;
     }
 
-
+    [HttpPost]
     [Produces(typeof(PlatformFeatureVm))]
     public IActionResult Post([FromBody] PlatformFeatureIm platformFeatureIm)
     {
         return ReturnOkResult(()=>_platformFeautreService.Create(platformFeatureIm));
     }
 
+    [HttpGet]
     [Produces(typeof(PlatformFeatureVm))]
     public IActionResult Get(int id)
     {
         return ReturnOkResult(() => _platformFeautreService.Get(id));
     }
 
+    [HttpPut]
     [Produces(typeof(PlatformFeatureVm))]
     public IActionResult Put([FromBody] PlatformFeatureUm platformFeatureUm)
     {
         return ReturnOkResult(() => _platformFeautreService.Update(platformFeatureUm));
     }
 
+    [HttpDelete]
     public IActionResult Delete(int id)
     {
         return ReturnOkResult(() => _platformFeautreService.Delete(id));
