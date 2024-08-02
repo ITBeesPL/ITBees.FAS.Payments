@@ -27,4 +27,14 @@ class PaymentSessionCreator : IPaymentSessionCreator
         var paymentSession = _paymentSessionRwRepo.InsertData(newPaymentSession);
         return paymentSession;
     }
+
+    public void CloseSuccessfulPayment(Guid guid)
+    {
+        _paymentSessionRwRepo.UpdateData(x => x.Guid == guid, x =>
+        {
+            x.Finished = true;
+            x.Success = true;
+            x.FinishedDate = DateTime.Now;
+        });
+    }
 }

@@ -1,16 +1,16 @@
-﻿using Google.Apis.Logging;
-using ITBees.FAS.Payments.Interfaces;
+﻿using ITBees.FAS.Payments.Interfaces;
 using ITBees.FAS.Payments.Interfaces.Models;
 using ITBees.Interfaces.Repository;
+using Microsoft.Extensions.Logging;
 
 namespace ITBees.FAS.Payments.Services;
 
 public class PaymentDbLoggerService : IPaymentDbLoggerService
 {
     private readonly IWriteOnlyRepository<PaymentOperatorLog> _paymentOperatorLogRwRepo;
-    private readonly ILogger _logger;
+    private readonly ILogger<PaymentDbLoggerService> _logger;
 
-    public PaymentDbLoggerService(IWriteOnlyRepository<PaymentOperatorLog> paymentOperatorLogRwRepo, ILogger logger)
+    public PaymentDbLoggerService(IWriteOnlyRepository<PaymentOperatorLog> paymentOperatorLogRwRepo, ILogger<PaymentDbLoggerService> logger)
     {
         _paymentOperatorLogRwRepo = paymentOperatorLogRwRepo;
         _logger = logger;
@@ -25,7 +25,7 @@ public class PaymentDbLoggerService : IPaymentDbLoggerService
         }
         catch (Exception e)
         {
-            _logger.Error(e, log.Event);
+            _logger.Log(LogLevel.Error, e, log.Event);
         }
     }
 }

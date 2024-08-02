@@ -2,6 +2,7 @@
 using ITBees.FAS.Payments.Interfaces;
 using ITBees.FAS.Payments.Interfaces.Models;
 using ITBees.Interfaces.Repository;
+using ITBees.RestfulApiControllers.Exceptions;
 using ITBees.UserManager.Interfaces.Services;
 
 namespace ITBees.FAS.Payments.Services;
@@ -12,16 +13,19 @@ public class PaymentSessionService : IPaymentSessionService
     private readonly IAspCurrentUserService _aspCurrentUserService;
     private readonly IFasPaymentProcessor _paymentProcessor;
     private readonly IPaymentSessionCreator _paymentSessionCreator;
+    private readonly IReadOnlyRepository<PaymentSession> _paymentSessionRoRepo;
 
     public PaymentSessionService(IWriteOnlyRepository<PaymentSession> paymentSessionRwRepo,
         IAspCurrentUserService aspCurrentUserService,
         IFasPaymentProcessor paymentProcessor,
-        IPaymentSessionCreator paymentSessionCreator)
+        IPaymentSessionCreator paymentSessionCreator,
+        IReadOnlyRepository<PaymentSession> paymentSessionRoRepo) 
     {
         _paymentSessionRwRepo = paymentSessionRwRepo;
         _aspCurrentUserService = aspCurrentUserService;
         _paymentProcessor = paymentProcessor;
         _paymentSessionCreator = paymentSessionCreator;
+        _paymentSessionRoRepo = paymentSessionRoRepo;
     }
 
 
@@ -54,7 +58,26 @@ public class PaymentSessionService : IPaymentSessionService
 
     public bool ConfirmPayment(Guid paymentSessionGuid)
     {
-        return _paymentProcessor.ConfirmPayment(paymentSessionGuid);
+        var paymentSession= _paymentSessionRoRepo.GetData(x => x.Guid == paymentSessionGuid).FirstOrDefault();
+        if (paymentSession == null)
+            throw new ResultNotFoundException("PaymentSession not exist");
+        if (paymentSession.Finished)
+        {
+            return true;
+        }
+        
+        var paymentFinishedWithSuccessOnStripe = _paymentProcessor.ConfirmPayment(paymentSessionGuid);
+        if (paymentFinishedWithSuccessOnStripe)
+        {
+            _paymentSessionRwRepo.UpdateData(x => x.Guid == paymentSessionGuid, x =>
+            {
+                x.Finished = true;
+                x.FinishedDate = new DateTime();
+                x.Success = true;
+            });
+        }
+
+        return paymentFinishedWithSuccessOnStripe;
     }
 
     public void CancelPayment(Guid paymentSessionGuid)

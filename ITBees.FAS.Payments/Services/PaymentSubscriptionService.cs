@@ -50,6 +50,7 @@ class PaymentSubscriptionService : IPaymentSubscriptionService
         var paymentSession = _paymentSessionCreator.CreateNew(DateTime.Now, _aspCurrentUserService.GetCurrentUserGuid(),
             _paymentProcessor);
 
+        var fasBillingPeriod = BillingPeriod.GetBillingPeriod(subcriptionPlan.Interval);
         var fasPayment = new FasPayment()
         {
             Mode = FasPaymentMode.Subscription,
@@ -57,12 +58,12 @@ class PaymentSubscriptionService : IPaymentSubscriptionService
             Products = new List<FasProduct>(){new FasProduct()
             {
                 Currency = subcriptionPlan.Currency,
-                BillingPeriod = BillingPeriod.GetBillingPeriod(subcriptionPlan.Interval),
+                BillingPeriod = fasBillingPeriod,
                 Quantity = 1,
                 PaymentTitleOrProductName = subcriptionPlan.PlanName,
                 Price = subcriptionPlan.Value,
                 Interval = subcriptionPlan.Interval.ToString(),
-                IntervalCount = subcriptionPlan.Interval
+                IntervalCount = GetMaximumIntervalCount(fasBillingPeriod)
             }},
             CustomerEmail = _aspCurrentUserService.GetCurrentUser().Email,
             CustomerName = _aspCurrentUserService.GetCurrentUser().DisplayName,
@@ -70,5 +71,34 @@ class PaymentSubscriptionService : IPaymentSubscriptionService
         var result = _paymentProcessor.CreatePaymentSession(fasPayment);
 
         return new InitialisedPaymentLinkVm(result.SessionUrl);
+    }
+
+    private int GetMaximumIntervalCount(FasBillingPeriod fasBillingPeriod)
+    {
+        switch (fasBillingPeriod)
+        {
+            case FasBillingPeriod.Daily:
+                return 1080;
+                break;
+            case FasBillingPeriod.Weekly:
+                return 156;
+                break;
+            case FasBillingPeriod.Monthly:
+                return 36;
+                break;
+            case FasBillingPeriod.Every3Months:
+                return 12;
+                break;
+            case FasBillingPeriod.Every6Months:
+                return 6;
+                break;
+            case FasBillingPeriod.Yearly:
+                return 3;
+                break;
+            case FasBillingPeriod.Custom:
+                throw new ArgumentException("Custom billing period requires specific interval count.");
+            default:
+                throw new ArgumentOutOfRangeException(nameof(fasBillingPeriod), fasBillingPeriod, null);
+        }
     }
 }

@@ -40,6 +40,7 @@ public class PaymentsManagerSetup : IFasDependencyRegistrationWithGenerics
         services.AddScoped<IReassignSubscriptionPlansToAvailablePlatformPlans, ReassignSubscriptionPlansToAvailablePlatformPlans>();
         services.AddScoped<IPaymentSubscriptionService, PaymentSubscriptionService>();
         services.AddScoped<IPaymentSessionCreator, PaymentSessionCreator>();
+        services.AddScoped<IPaymentDbLoggerService, PaymentDbLoggerService>();
     }
 
     public static void RegisterDbModels(ModelBuilder modelBuilder)
@@ -53,5 +54,6 @@ public class PaymentsManagerSetup : IFasDependencyRegistrationWithGenerics
         modelBuilder.Entity<PlanFeature>().HasOne(x=>x.PlatformFeature);
         modelBuilder.Entity<PlatformFeature>().HasKey(x => x.Id);
         modelBuilder.Entity<PaymentSession>().HasKey(x => x.Guid);
+        modelBuilder.Entity<PaymentOperatorLog>().HasKey(x => x.Id);
     }
 }
