@@ -63,7 +63,9 @@ class PaymentSubscriptionService : IPaymentSubscriptionService
                 Price = subcriptionPlan.Value,
                 Interval = subcriptionPlan.Interval.ToString(),
                 IntervalCount = 36
-            }}
+            }},
+            CustomerEmail = _aspCurrentUserService.GetCurrentUser().Email,
+            CustomerName = _aspCurrentUserService.GetCurrentUser().DisplayName,
         };
         var result = _paymentProcessor.CreatePaymentSession(fasPayment);
 
