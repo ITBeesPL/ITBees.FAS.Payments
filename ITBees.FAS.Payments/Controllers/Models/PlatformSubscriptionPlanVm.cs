@@ -22,7 +22,7 @@ public class PlatformSubscriptionPlanVm
         PlanDescription = x.PlanDescription;
         ButtonText = x.ButtonText;
         BadgeText = x.BadgeText;
-        Language = x.Language.Name;
+        Language = x.Language?.Name;
         LanguageId = x.LanguageId;
         Currency = x.Currency;
     }
