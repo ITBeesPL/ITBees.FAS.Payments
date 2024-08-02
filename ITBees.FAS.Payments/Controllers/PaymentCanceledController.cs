@@ -15,8 +15,8 @@ public class PaymentCanceledController : RestfulControllerBase<PaymentCanceledCo
         _paymentSessionService = paymentSessionService;
     }
 
-    [HttpPut]
-    public IActionResult Put(Guid paymentSessionGuid)
+    [HttpGet]
+    public IActionResult Get(Guid paymentSessionGuid)
     {
         return ReturnOkResult(() => _paymentSessionService.CancelPayment(paymentSessionGuid));
     }
