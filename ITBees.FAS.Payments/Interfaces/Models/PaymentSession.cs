@@ -14,4 +14,5 @@ public class PaymentSession
     public string PaymentOperator { get; set; }
     public InvoiceData InvoiceData { get; set; }
     public Guid? InvoiceDataGuid { get; set; }
+    public DateTime? FinishedDate { get; set; }
 }
