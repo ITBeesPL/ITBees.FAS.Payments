@@ -62,7 +62,7 @@ class PaymentSubscriptionService : IPaymentSubscriptionService
                 PaymentTitleOrProductName = subcriptionPlan.PlanName,
                 Price = subcriptionPlan.Value,
                 Interval = subcriptionPlan.Interval.ToString(),
-                IntervalCount = 36
+                IntervalCount = subcriptionPlan.Interval
             }},
             CustomerEmail = _aspCurrentUserService.GetCurrentUser().Email,
             CustomerName = _aspCurrentUserService.GetCurrentUser().DisplayName,
