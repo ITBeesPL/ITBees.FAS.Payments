@@ -6,4 +6,5 @@ public class PaymentOperatorLog
     public DateTime Received { get; set; }
     public string Event { get; set; }
     public string Operator { get; set; }
+    public string JsonEvent { get; set; }
 }
