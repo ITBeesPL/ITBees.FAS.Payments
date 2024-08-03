@@ -27,4 +27,5 @@ public class PlatformSubscriptionPlan
     public Language Language { get; set; }
     public int? LanguageId { get; set; }
     public string? Currency { get; set; }
+    public bool IsTrial { get; set; }
 }

@@ -14,19 +14,22 @@ class PaymentSubscriptionService : IPaymentSubscriptionService
     private readonly IReadOnlyRepository<InvoiceData> _invoiceDataRoRepo;
     private readonly IFasPaymentProcessor _paymentProcessor;
     private readonly IPaymentSessionCreator _paymentSessionCreator;
+    private readonly IApplySubscriptionPlanAsPlatformOperatorService _applySubscriptionPlanAsPlatformOperatorService;
     private readonly IReadOnlyRepository<PaymentSession> _paymentSessionRoRepo;
 
     public PaymentSubscriptionService(IAspCurrentUserService aspCurrentUserService,
         IReadOnlyRepository<PlatformSubscriptionPlan> platformSubscriptionPlanRoRepo,
         IReadOnlyRepository<InvoiceData> invoiceDataRoRepo,
         IFasPaymentProcessor paymentProcessor,
-        IPaymentSessionCreator paymentSessionCreator)
+        IPaymentSessionCreator paymentSessionCreator,
+        IApplySubscriptionPlanAsPlatformOperatorService applySubscriptionPlanAsPlatformOperatorService)
     {
         _aspCurrentUserService = aspCurrentUserService;
         _platformSubscriptionPlanRoRepo = platformSubscriptionPlanRoRepo;
         _invoiceDataRoRepo = invoiceDataRoRepo;
         _paymentProcessor = paymentProcessor;
         _paymentSessionCreator = paymentSessionCreator;
+        _applySubscriptionPlanAsPlatformOperatorService = applySubscriptionPlanAsPlatformOperatorService;
     }
 
     public InitialisedPaymentLinkVm CreateNewPaymentSubscriptionSession(
@@ -45,6 +48,15 @@ class PaymentSubscriptionService : IPaymentSubscriptionService
         if (subcriptionPlan == null)
         {
             throw new ResultNotFoundException("Could not find subscription plan");
+        }
+
+        if (subcriptionPlan.IsTrial)
+        {
+            _applySubscriptionPlanAsPlatformOperatorService.Apply(new ApplySubscriptionPlanToCompanyIm()
+            {
+                CompanyGuid = invoiceData.CompanyGuid,
+                SubscriptionPlanGuid = subcriptionPlan.Guid
+            });
         }
 
         var paymentSession = _paymentSessionCreator.CreateNew(DateTime.Now, _aspCurrentUserService.GetCurrentUserGuid(),

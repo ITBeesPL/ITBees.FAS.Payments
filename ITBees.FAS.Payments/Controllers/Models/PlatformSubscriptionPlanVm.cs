@@ -26,6 +26,7 @@ public class PlatformSubscriptionPlanVm
         Language = x.Language?.Name;
         LanguageId = x.LanguageId;
         Currency = x.Currency;
+        IsTrial = x.IsTrial;
     }
 
     public string Language { get; set; }
@@ -47,4 +48,5 @@ public class PlatformSubscriptionPlanVm
     public bool IsActive { get; set; }
     public bool IsOneTimePayment { get; set; }
     public string PlanName { get; set; }
+    public bool IsTrial { get; set; }
 }

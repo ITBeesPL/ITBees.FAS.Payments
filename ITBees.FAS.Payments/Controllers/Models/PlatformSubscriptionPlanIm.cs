@@ -18,4 +18,5 @@ public class PlatformSubscriptionPlanIm
     public string? BadgeText { get; set; }
     public int LanguageId { get; set; }
     public string Currency { get; set; }
+    public bool IsTrial { get; set; }
 }
