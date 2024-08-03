@@ -12,6 +12,7 @@ public class PlatformSubscriptionPlanVm
         this.Value = x.Value;
         this.Expires = x.Expires;
         this.Interval = x.Interval;
+        this.IntervalDays = x.IntervalDays;
         this.IsActive = x.IsActive;
         this.IsOneTimePayment = x.IsOneTimePayment;
         this.PlanName = x.PlanName;
@@ -26,29 +27,23 @@ public class PlatformSubscriptionPlanVm
         LanguageId = x.LanguageId;
         Currency = x.Currency;
     }
-    
+
     public string Language { get; set; }
     public int? LanguageId { get; set; }
     public string Currency { get; set; }
     public string? BadgeText { get; set; }
-
     public string? ButtonText { get; set; }
-
     public string? PlanDescription { get; set; }
-
     public bool MostPopular { get; set; }
-
     public int Position { get; set; }
-
     public string Title { get; set; }
-
     public List<PlanFeatureVm> PlanFeatures { get; set; }
-
     public string GroupName { get; set; }
     public Guid Guid { get; set; }
     public decimal Value { get; set; }
     public DateTime? Expires { get; set; }
     public int Interval { get; set; }
+    public int IntervalDays { get; set; }
     public bool IsActive { get; set; }
     public bool IsOneTimePayment { get; set; }
     public string PlanName { get; set; }

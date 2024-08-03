@@ -13,6 +13,7 @@ public class PlatformSubscriptionPlan
     public UserAccount CreatedBy { get; set; }
     public Guid CreatedByGuid { get; set; }
     public int Interval { get; set; }
+    public int IntervalDays { get; set; }
     public bool IsOneTimePayment { get; set; }
     public string GroupName { get; set; }
     public decimal Value { get; set; }

@@ -14,18 +14,21 @@ public class PaymentSessionService : IPaymentSessionService
     private readonly IFasPaymentProcessor _paymentProcessor;
     private readonly IPaymentSessionCreator _paymentSessionCreator;
     private readonly IReadOnlyRepository<PaymentSession> _paymentSessionRoRepo;
+    private readonly IApplySubscriptionPlanToCompanyService _applySubscriptionPlanToCompanyService;
 
     public PaymentSessionService(IWriteOnlyRepository<PaymentSession> paymentSessionRwRepo,
         IAspCurrentUserService aspCurrentUserService,
         IFasPaymentProcessor paymentProcessor,
         IPaymentSessionCreator paymentSessionCreator,
-        IReadOnlyRepository<PaymentSession> paymentSessionRoRepo) 
+        IReadOnlyRepository<PaymentSession> paymentSessionRoRepo,
+        IApplySubscriptionPlanToCompanyService applySubscriptionPlanToCompanyService)
     {
         _paymentSessionRwRepo = paymentSessionRwRepo;
         _aspCurrentUserService = aspCurrentUserService;
         _paymentProcessor = paymentProcessor;
         _paymentSessionCreator = paymentSessionCreator;
         _paymentSessionRoRepo = paymentSessionRoRepo;
+        _applySubscriptionPlanToCompanyService = applySubscriptionPlanToCompanyService;
     }
 
 
@@ -58,14 +61,14 @@ public class PaymentSessionService : IPaymentSessionService
 
     public bool ConfirmPayment(Guid paymentSessionGuid)
     {
-        var paymentSession= _paymentSessionRoRepo.GetData(x => x.Guid == paymentSessionGuid).FirstOrDefault();
+        var paymentSession = _paymentSessionRoRepo.GetData(x => x.Guid == paymentSessionGuid, x => x.InvoiceData, x => x.InvoiceData.SubscriptionPlan).FirstOrDefault();
         if (paymentSession == null)
             throw new ResultNotFoundException("PaymentSession not exist");
         if (paymentSession.Finished)
         {
             return true;
         }
-        
+
         var paymentFinishedWithSuccessOnStripe = _paymentProcessor.ConfirmPayment(paymentSessionGuid);
         if (paymentFinishedWithSuccessOnStripe)
         {
@@ -75,6 +78,8 @@ public class PaymentSessionService : IPaymentSessionService
                 x.FinishedDate = new DateTime();
                 x.Success = true;
             });
+
+            _applySubscriptionPlanToCompanyService.Apply(paymentSession.InvoiceData.SubscriptionPlan, paymentSession.InvoiceData.CompanyGuid);
         }
 
         return paymentFinishedWithSuccessOnStripe;
