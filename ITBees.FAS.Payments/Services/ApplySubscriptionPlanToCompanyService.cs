@@ -21,9 +21,14 @@ class ApplySubscriptionPlanToCompanyService : IApplySubscriptionPlanToCompanySer
     {
         _companyRwRepo.UpdateData(x => x.Guid == companyGuid, x =>
         {
-            x.SubscriptionPlanGuid = subscriptionPlan.Guid;
-            x.SubscriptionPlanName = subscriptionPlan.PlanName;
-            x.SubscriptionActiveTo = DateTime.Now.AddMonths(subscriptionPlan.Interval).AddDays(subscriptionPlan.IntervalDays);
+            if (subscriptionPlan.IsTrial)
+            {
+                x.CompanyPlatformSubscription.TrialNotAvailable = true;
+            }
+
+            x.CompanyPlatformSubscription.SubscriptionPlanGuid = subscriptionPlan.Guid;
+            x.CompanyPlatformSubscription.SubscriptionPlanName = subscriptionPlan.PlanName;
+            x.CompanyPlatformSubscription.SubscriptionActiveTo = DateTime.Now.AddMonths(subscriptionPlan.Interval).AddDays(subscriptionPlan.IntervalDays);
         });
     }
 }

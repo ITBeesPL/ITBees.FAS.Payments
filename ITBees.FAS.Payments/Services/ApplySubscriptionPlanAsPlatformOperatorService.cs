@@ -41,8 +41,9 @@ class ApplySubscriptionPlanAsPlatformOperatorService : IApplySubscriptionPlanAsP
     {
         _companyRwRepo.UpdateData(x => x.Guid == companyGuid, x =>
         {
-            x.SubscriptionPlanGuid = null;
-            x.SubscriptionActiveTo = null;
+            x.CompanyPlatformSubscription.SubscriptionPlanGuid = null;
+            x.CompanyPlatformSubscription.SubscriptionActiveTo = null;
+            x.CompanyPlatformSubscription.SubscriptionPlanName = null;
         });
     }
 }

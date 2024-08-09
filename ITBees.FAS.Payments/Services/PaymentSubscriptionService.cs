@@ -1,6 +1,7 @@
 ﻿using ITBees.FAS.Payments.Controllers.Models;
 using ITBees.FAS.Payments.Interfaces;
 using ITBees.FAS.Payments.Interfaces.Models;
+using ITBees.Interfaces.Platforms;
 using ITBees.Interfaces.Repository;
 using ITBees.RestfulApiControllers.Exceptions;
 using ITBees.UserManager.Interfaces.Services;
@@ -15,6 +16,7 @@ class PaymentSubscriptionService : IPaymentSubscriptionService
     private readonly IFasPaymentProcessor _paymentProcessor;
     private readonly IPaymentSessionCreator _paymentSessionCreator;
     private readonly IApplySubscriptionPlanAsPlatformOperatorService _applySubscriptionPlanAsPlatformOperatorService;
+    private readonly IPlatformSettingsService _platformSettingsService;
     private readonly IReadOnlyRepository<PaymentSession> _paymentSessionRoRepo;
 
     public PaymentSubscriptionService(IAspCurrentUserService aspCurrentUserService,
@@ -22,7 +24,8 @@ class PaymentSubscriptionService : IPaymentSubscriptionService
         IReadOnlyRepository<InvoiceData> invoiceDataRoRepo,
         IFasPaymentProcessor paymentProcessor,
         IPaymentSessionCreator paymentSessionCreator,
-        IApplySubscriptionPlanAsPlatformOperatorService applySubscriptionPlanAsPlatformOperatorService)
+        IApplySubscriptionPlanAsPlatformOperatorService applySubscriptionPlanAsPlatformOperatorService,
+        IPlatformSettingsService platformSettingsService)
     {
         _aspCurrentUserService = aspCurrentUserService;
         _platformSubscriptionPlanRoRepo = platformSubscriptionPlanRoRepo;
@@ -30,6 +33,7 @@ class PaymentSubscriptionService : IPaymentSubscriptionService
         _paymentProcessor = paymentProcessor;
         _paymentSessionCreator = paymentSessionCreator;
         _applySubscriptionPlanAsPlatformOperatorService = applySubscriptionPlanAsPlatformOperatorService;
+        _platformSettingsService = platformSettingsService;
     }
 
     public InitialisedPaymentLinkVm CreateNewPaymentSubscriptionSession(
@@ -57,6 +61,8 @@ class PaymentSubscriptionService : IPaymentSubscriptionService
                 CompanyGuid = invoiceData.CompanyGuid,
                 SubscriptionPlanGuid = subcriptionPlan.Guid
             });
+
+            return new InitialisedPaymentLinkVm(_platformSettingsService.GetSetting("PlatformRedirectUrlAfterTrialPlanEnabled"));
         }
 
         var paymentSession = _paymentSessionCreator.CreateNew(DateTime.Now, _aspCurrentUserService.GetCurrentUserGuid(),
