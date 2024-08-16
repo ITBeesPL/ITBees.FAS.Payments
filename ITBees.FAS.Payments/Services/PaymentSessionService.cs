@@ -61,7 +61,6 @@ public class PaymentSessionService : IPaymentSessionService
 
     public bool ConfirmPayment(Guid paymentSessionGuid)
     {
-        _paymentSessionCreator.CloseSuccessfulPayment(paymentSessionGuid);
         var paymentSession = _paymentSessionRoRepo.GetData(x => x.Guid == paymentSessionGuid, x => x.InvoiceData, x => x.InvoiceData.SubscriptionPlan).FirstOrDefault();
         if (paymentSession == null)
             throw new ResultNotFoundException("PaymentSession not exist");
