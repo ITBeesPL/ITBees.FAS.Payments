@@ -17,7 +17,7 @@ public class PlatformSubscriptionPlanVm
         this.IsOneTimePayment = x.IsOneTimePayment;
         this.PlanName = x.PlanName;
         this.GroupName = x.GroupName;
-        this.PlanFeatures = x.PlanFeatures.Select(x => new PlanFeatureVm(x)).ToList();
+        this.PlanFeatures = x.PlanFeatures?.Select(x => new PlanFeatureVm(x)).ToList();
         Position = x.Position;
         MostPopular = x.MostPopular;
         PlanDescription = x.PlanDescription;

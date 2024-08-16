@@ -20,7 +20,7 @@ class PaymentSessionCreator : IPaymentSessionCreator
         _applySubscriptionPlanToCompanyService = applySubscriptionPlanToCompanyService;
     }
     public PaymentSession CreateNew(DateTime Created, Guid? currentUserGuid,
-        IFasPaymentProcessor paymentProcessor)
+        IFasPaymentProcessor paymentProcessor, Guid invoiceDataGuid)
     {
         var newPaymentSession = new PaymentSession()
         {
@@ -28,7 +28,8 @@ class PaymentSessionCreator : IPaymentSessionCreator
             CreatedByGuid = currentUserGuid,
             Success = false,
             Finished = false,
-            PaymentOperator = paymentProcessor.ProcessorName
+            PaymentOperator = paymentProcessor.ProcessorName,
+            InvoiceDataGuid = invoiceDataGuid
         };
 
         var paymentSession = _paymentSessionRwRepo.InsertData(newPaymentSession);
@@ -37,7 +38,10 @@ class PaymentSessionCreator : IPaymentSessionCreator
 
     public void CloseSuccessfulPayment(Guid guid)
     {
-        var paymentSession = _paymentSessionRoRepo.GetFirst(x => x.Guid == guid, x=>x.InvoiceData, x=>x.InvoiceData.SubscriptionPlan);
+        var pa = _paymentSessionRoRepo.GetData(x => x.Guid == guid);
+        var paymentSession = _paymentSessionRoRepo.GetFirst(x => x.Guid == guid, 
+            x=>x.InvoiceData, 
+            x=>x.InvoiceData.SubscriptionPlan);
         _paymentSessionRwRepo.UpdateData(x => x.Guid == guid, x =>
         {
             x.Finished = true;

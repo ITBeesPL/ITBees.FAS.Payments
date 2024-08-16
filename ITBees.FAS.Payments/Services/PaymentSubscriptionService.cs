@@ -66,7 +66,7 @@ class PaymentSubscriptionService : IPaymentSubscriptionService
         }
 
         var paymentSession = _paymentSessionCreator.CreateNew(DateTime.Now, _aspCurrentUserService.GetCurrentUserGuid(),
-            _paymentProcessor);
+            _paymentProcessor, newPaymentSubscriptionIm.InvoiceDataGuid);
 
         var fasBillingPeriod = BillingPeriod.GetBillingPeriod(subcriptionPlan.Interval);
         var fasPayment = new FasPayment()
