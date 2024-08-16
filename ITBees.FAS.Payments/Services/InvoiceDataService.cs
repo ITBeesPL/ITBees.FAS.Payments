@@ -65,7 +65,7 @@ public class InvoiceDataService : IInvoiceDataService
                 currentInvoiceData.PostCode = invoiceDataIm.PostCode;
                 currentInvoiceData.Street = invoiceDataIm.Street;
                 currentInvoiceData.SubscriptionPlanGuid = invoiceDataIm.SubscriptionPlanGuid;
-                var updated = this.UpdateInvoiceData(currentInvoiceData);
+                var updated = this.UpdateInvoiceData(invoiceDataIm, currentInvoiceData.Guid);
                 return updated;
             }
         }
@@ -77,14 +77,14 @@ public class InvoiceDataService : IInvoiceDataService
     }
 
 
-    public InvoiceDataVm UpdateInvoiceData(InvoiceData invoiceData)
+    public InvoiceDataVm UpdateInvoiceData(InvoiceDataIm invoiceData, Guid invoiceDataGuid)
     {
         if (_aspCurrentUserService.TryCanIDoForCompany(TypeOfOperation.Rw, invoiceData.CompanyGuid) == false)
         {
             throw new AccessViolationException("You don't have enough privileges to set this data");
         }
 
-        var result = _invoiceDataRwRepo.UpdateData(x => x.Guid == invoiceData.Guid, x =>
+        var result = _invoiceDataRwRepo.UpdateData(x => x.Guid == invoiceDataGuid, x =>
         {
             x.CompanyGuid = invoiceData.CompanyGuid;
             x.Country = invoiceData.Country;
@@ -152,6 +152,6 @@ public class InvoiceDataService : IInvoiceDataService
     public InvoiceDataVm Update(InvoiceDataUm invoiceDataUm)
     {
         var invoiceData = _invoiceDataRoRepo.GetData(x => x.Guid == invoiceDataUm.Guid).FirstOrDefault();
-        return this.UpdateInvoiceData(invoiceData);
+        return this.UpdateInvoiceData(invoiceDataUm, invoiceDataUm.Guid);
     }
 }
