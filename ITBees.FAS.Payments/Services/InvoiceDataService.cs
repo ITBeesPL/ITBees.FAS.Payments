@@ -36,16 +36,16 @@ public class InvoiceDataService : IInvoiceDataService
             {
                 var result = _invoiceDataRwRepo.InsertData(new InvoiceData()
                 {
-                    City = invoiceDataIm.City,
+                    City = invoiceDataIm.City == null ? "" : invoiceDataIm.City,
                     CompanyGuid = invoiceDataIm.CompanyGuid,
-                    Country = invoiceDataIm.Country,
-                    CompanyName = invoiceDataIm.CompanyName,
+                    Country = invoiceDataIm.Country == null ? "" : invoiceDataIm.Country,
+                    CompanyName = invoiceDataIm.CompanyName == null ? "" : invoiceDataIm.CompanyName,
                     Created = DateTime.Now,
                     CreatedByGuid = cu.Guid,
-                    InvoiceEmail = invoiceDataIm.InvoiceEmail,
-                    NIP = invoiceDataIm.NIP,
-                    PostCode = invoiceDataIm.PostCode,
-                    Street = invoiceDataIm.Street,
+                    InvoiceEmail = invoiceDataIm.InvoiceEmail == null ? "" : invoiceDataIm.InvoiceEmail,
+                    NIP = invoiceDataIm.NIP == null ? "" : invoiceDataIm.NIP,
+                    PostCode = invoiceDataIm.PostCode == null ? "" : invoiceDataIm.PostCode,
+                    Street = invoiceDataIm.Street == null ? "" : invoiceDataIm.Street,
                     SubscriptionPlanGuid = invoiceDataIm.SubscriptionPlanGuid
                 });
 
@@ -55,15 +55,15 @@ public class InvoiceDataService : IInvoiceDataService
             }
             else
             {
-                currentInvoiceData.City = invoiceDataIm.City;
+                currentInvoiceData.City = invoiceDataIm.City == null ? "" : invoiceDataIm.City;
                 currentInvoiceData.CompanyGuid = invoiceDataIm.CompanyGuid;
-                currentInvoiceData.Country = invoiceDataIm.Country;
-                currentInvoiceData.CompanyName = invoiceDataIm.CompanyName;
+                currentInvoiceData.Country = invoiceDataIm.Country == null ? "" : invoiceDataIm.Country;
+                currentInvoiceData.CompanyName = invoiceDataIm.CompanyName == null ? "" : invoiceDataIm.CompanyName;
                 currentInvoiceData.ModifiedByGuid = cu.Guid;
-                currentInvoiceData.InvoiceEmail = invoiceDataIm.InvoiceEmail;
-                currentInvoiceData.NIP = invoiceDataIm.NIP;
-                currentInvoiceData.PostCode = invoiceDataIm.PostCode;
-                currentInvoiceData.Street = invoiceDataIm.Street;
+                currentInvoiceData.InvoiceEmail = invoiceDataIm.InvoiceEmail == null ? "" : invoiceDataIm.InvoiceEmail;
+                currentInvoiceData.NIP = invoiceDataIm.NIP == null ? "" : invoiceDataIm.NIP;
+                currentInvoiceData.PostCode = invoiceDataIm.PostCode == null ? "" : invoiceDataIm.PostCode;
+                currentInvoiceData.Street = invoiceDataIm.Street == null ? "" : invoiceDataIm.Street;
                 currentInvoiceData.SubscriptionPlanGuid = invoiceDataIm.SubscriptionPlanGuid;
                 var updated = this.UpdateInvoiceData(invoiceDataIm, currentInvoiceData.Guid);
                 return updated;
@@ -86,17 +86,17 @@ public class InvoiceDataService : IInvoiceDataService
 
         var result = _invoiceDataRwRepo.UpdateData(x => x.Guid == invoiceDataGuid, x =>
         {
-            x.CompanyGuid = invoiceData.CompanyGuid;
-            x.Country = invoiceData.Country;
-            x.NIP = invoiceData.NIP;
-            x.City = invoiceData.City;
-            x.CompanyName = invoiceData.CompanyName;
-            x.Country = invoiceData.Country;
+            x.CompanyGuid = invoiceData.CompanyGuid ;
+            x.Country = invoiceData.Country == null ? "" : invoiceData.Country;
+            x.NIP = invoiceData.NIP == null ? "" : invoiceData.NIP;
+            x.City = invoiceData.City == null ? "" : invoiceData.City;
+            x.CompanyName = invoiceData.CompanyName == null ? "" : invoiceData.CompanyName;
+            x.Country = invoiceData.Country == null ? "" : invoiceData.Country;
             x.ModifiedByGuid = _aspCurrentUserService.GetCurrentUserGuid();
             x.ModifiedDate = DateTime.Now;
-            x.InvoiceEmail = invoiceData.InvoiceEmail;
-            x.PostCode = invoiceData.PostCode;
-            x.Street = invoiceData.Street;
+            x.InvoiceEmail = invoiceData.InvoiceEmail == null ? "" : invoiceData.InvoiceEmail;
+            x.PostCode = invoiceData.PostCode == null ? "" : invoiceData.PostCode;
+            x.Street = invoiceData.Street == null ? "" : invoiceData.Street;
             x.SubscriptionPlanGuid = invoiceData.SubscriptionPlanGuid;
         }, x => x.SubscriptionPlan, x => x.CreatedBy, x => x.Company);
 
