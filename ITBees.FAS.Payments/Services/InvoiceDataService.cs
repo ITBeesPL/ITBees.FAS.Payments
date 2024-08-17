@@ -125,7 +125,7 @@ public class InvoiceDataService : IInvoiceDataService
 
             var entity = new InvoiceData()
             {
-                City = company.City,
+                City = company.City == null ? "" : company.City,
                 CompanyGuid = company.Guid,
                 CompanyName = company.CompanyName,
                 Country = "",
@@ -134,9 +134,9 @@ public class InvoiceDataService : IInvoiceDataService
                 InvoiceEmail = _aspCurrentUserService.GetCurrentUser().Email,
                 InvoiceRequested = string.IsNullOrEmpty(company.Nip) ? true : false,
                 IsActive = true,
-                NIP = company.Nip,
-                PostCode = company.PostCode,
-                Street = company.Street,
+                NIP = company.Nip == null ? "" : company.Nip,
+                PostCode = company.PostCode == null ? "" : company.PostCode,
+                Street = company.Street == null ? "" : company.Street,
                 SubscriptionPlanGuid = null
             };
 
