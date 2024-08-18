@@ -49,10 +49,8 @@ class PaymentSessionCreator : IPaymentSessionCreator
             x.FinishedDate = DateTime.Now;
         });
 
-        if (paymentSession.InvoiceData.SubscriptionPlan != null)
-        {
-            _applySubscriptionPlanToCompanyService.Apply(paymentSession.InvoiceData.SubscriptionPlan, paymentSession.InvoiceData.CompanyGuid);
-        }
-        
+        //to do service responsible for managing existing platform subscription on maybe actvie
+        _applySubscriptionPlanToCompanyService.Apply(paymentSession.InvoiceData.SubscriptionPlan, paymentSession.InvoiceData.CompanyGuid);
+
     }
 }
