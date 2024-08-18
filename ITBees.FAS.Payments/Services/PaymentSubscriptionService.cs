@@ -13,6 +13,7 @@ class PaymentSubscriptionService : IPaymentSubscriptionService
     private readonly IAspCurrentUserService _aspCurrentUserService;
     private readonly IReadOnlyRepository<PlatformSubscriptionPlan> _platformSubscriptionPlanRoRepo;
     private readonly IReadOnlyRepository<InvoiceData> _invoiceDataRoRepo;
+    private readonly IWriteOnlyRepository<InvoiceData> _invoiceDataRwRepo;
     private readonly IFasPaymentProcessor _paymentProcessor;
     private readonly IPaymentSessionCreator _paymentSessionCreator;
     private readonly IApplySubscriptionPlanAsPlatformOperatorService _applySubscriptionPlanAsPlatformOperatorService;
@@ -22,6 +23,7 @@ class PaymentSubscriptionService : IPaymentSubscriptionService
     public PaymentSubscriptionService(IAspCurrentUserService aspCurrentUserService,
         IReadOnlyRepository<PlatformSubscriptionPlan> platformSubscriptionPlanRoRepo,
         IReadOnlyRepository<InvoiceData> invoiceDataRoRepo,
+        IWriteOnlyRepository<InvoiceData> invoiceDataRwRepo,
         IFasPaymentProcessor paymentProcessor,
         IPaymentSessionCreator paymentSessionCreator,
         IApplySubscriptionPlanAsPlatformOperatorService applySubscriptionPlanAsPlatformOperatorService,
@@ -30,6 +32,7 @@ class PaymentSubscriptionService : IPaymentSubscriptionService
         _aspCurrentUserService = aspCurrentUserService;
         _platformSubscriptionPlanRoRepo = platformSubscriptionPlanRoRepo;
         _invoiceDataRoRepo = invoiceDataRoRepo;
+        _invoiceDataRwRepo = invoiceDataRwRepo;
         _paymentProcessor = paymentProcessor;
         _paymentSessionCreator = paymentSessionCreator;
         _applySubscriptionPlanAsPlatformOperatorService = applySubscriptionPlanAsPlatformOperatorService;
@@ -45,6 +48,11 @@ class PaymentSubscriptionService : IPaymentSubscriptionService
         {
             throw new Exception("Could not find user invoice data");
         }
+
+        _invoiceDataRwRepo.UpdateData(x => x.Guid == newPaymentSubscriptionIm.InvoiceDataGuid, x =>
+        {
+            x.SubscriptionPlanGuid = newPaymentSubscriptionIm.PlatformSubscriptionPlanGuid;
+        });
 
         var subcriptionPlan = _platformSubscriptionPlanRoRepo
             .GetData(x => x.Guid == newPaymentSubscriptionIm.PlatformSubscriptionPlanGuid).FirstOrDefault();
