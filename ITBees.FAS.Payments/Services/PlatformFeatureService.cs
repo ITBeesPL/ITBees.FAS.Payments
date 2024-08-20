@@ -3,7 +3,7 @@ using ITBees.FAS.Payments.Interfaces;
 using ITBees.FAS.Payments.Interfaces.Models;
 using ITBees.Interfaces.Repository;
 using ITBees.RestfulApiControllers.Exceptions;
-using ITBees.UserManager.Interfaces.Services;
+using ITBees.UserManager.Interfaces;
 
 namespace ITBees.FAS.Payments.Services;
 

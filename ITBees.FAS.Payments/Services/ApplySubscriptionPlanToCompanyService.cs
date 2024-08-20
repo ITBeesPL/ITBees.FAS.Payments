@@ -4,7 +4,7 @@ using ITBees.Interfaces.Repository;
 using ITBees.Models.Companies;
 using ITBees.Models.Languages;
 using ITBees.Translations;
-using ITBees.UserManager.Interfaces.Services;
+using ITBees.UserManager.Interfaces;
 using Microsoft.Extensions.Logging;
 
 namespace ITBees.FAS.Payments.Services;
