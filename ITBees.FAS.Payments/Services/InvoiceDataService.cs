@@ -46,7 +46,8 @@ public class InvoiceDataService : IInvoiceDataService
                     NIP = invoiceDataIm.NIP == null ? "" : invoiceDataIm.NIP,
                     PostCode = invoiceDataIm.PostCode == null ? "" : invoiceDataIm.PostCode,
                     Street = invoiceDataIm.Street == null ? "" : invoiceDataIm.Street,
-                    SubscriptionPlanGuid = invoiceDataIm.SubscriptionPlanGuid
+                    SubscriptionPlanGuid = invoiceDataIm.SubscriptionPlanGuid,
+                    InvoiceRequested = invoiceDataIm.InvoiceRequested
                 });
 
                 _invoiceDataRoRepo.GetData(x => x.Guid == result.Guid, x => x.Company, x => x.CreatedBy,
@@ -98,6 +99,7 @@ public class InvoiceDataService : IInvoiceDataService
             x.PostCode = invoiceData.PostCode == null ? "" : invoiceData.PostCode;
             x.Street = invoiceData.Street == null ? "" : invoiceData.Street;
             x.SubscriptionPlanGuid = invoiceData.SubscriptionPlanGuid;
+            x.InvoiceRequested = invoiceData.InvoiceRequested;
         }, x => x.SubscriptionPlan, x => x.CreatedBy, x => x.Company);
 
         return new InvoiceDataVm(result.FirstOrDefault());
