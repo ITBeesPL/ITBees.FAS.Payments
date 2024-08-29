@@ -54,7 +54,7 @@ public class PaymentSessionService : IPaymentSessionService
                  IntervalCount = newPaymentIm.IntervalCount
              }
          }
-        });
+        }, true);
 
         return new InitialisedPaymentLinkVm(sessionUrl.SessionUrl);
     }

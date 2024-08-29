@@ -79,7 +79,7 @@ class PaymentSubscriptionService : IPaymentSubscriptionService
         var fasBillingPeriod = BillingPeriod.GetBillingPeriod(subcriptionPlan.Interval);
         var fasPayment = new FasPayment()
         {
-            Mode = FasPaymentMode.Subscription,
+            Mode = subcriptionPlan.IsOneTimePayment ? FasPaymentMode.Payment :FasPaymentMode.Subscription,
             PaymentSessionGuid = paymentSession.Guid,
             Products = new List<FasProduct>(){new FasProduct()
             {
@@ -94,7 +94,7 @@ class PaymentSubscriptionService : IPaymentSubscriptionService
             CustomerEmail = _aspCurrentUserService.GetCurrentUser().Email,
             CustomerName = _aspCurrentUserService.GetCurrentUser().DisplayName,
         };
-        var result = _paymentProcessor.CreatePaymentSession(fasPayment);
+        var result = _paymentProcessor.CreatePaymentSession(fasPayment, subcriptionPlan.IsOneTimePayment);
 
         return new InitialisedPaymentLinkVm(result.SessionUrl);
     }

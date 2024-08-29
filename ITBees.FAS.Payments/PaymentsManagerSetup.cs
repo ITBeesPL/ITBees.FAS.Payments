@@ -30,7 +30,6 @@ public class PaymentsManagerSetup : IFasDependencyRegistrationWithGenerics
 
     public void Register<TContext, TIdentityUser>(IServiceCollection services, IConfigurationRoot configurationRoot) where TContext : DbContext where TIdentityUser : IdentityUser, new()
     {
-        services.AddScoped<IFasPaymentManager, FasPaymentManager>();
         services.AddScoped<IPlatformAvailableSubscriptionPlansService, PlatformAvailableSubscriptionPlansService>();
         services.AddScoped<IPaymentSessionService, PaymentSessionService>();
         services.AddScoped<ISubscriptionPlansService, SelectedSubscriptionPlansService>();
