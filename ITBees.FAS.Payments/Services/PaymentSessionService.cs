@@ -93,4 +93,15 @@ public class PaymentSessionService : IPaymentSessionService
             x.Success = false;
         });
     }
+
+    public bool UserCompanyHasEverMadePayment(Guid userAccountGuid)
+    {
+        var paymentSession = _paymentSessionRoRepo.GetData(x => x.InvoiceData.Company.OwnerGuid == userAccountGuid).FirstOrDefault();
+        if (paymentSession != null)
+        {
+            return true;
+        }
+
+        return false;
+    }
 }
