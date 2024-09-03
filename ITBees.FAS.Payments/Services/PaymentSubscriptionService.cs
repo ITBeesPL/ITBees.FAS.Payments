@@ -94,7 +94,7 @@ class PaymentSubscriptionService : IPaymentSubscriptionService
             CustomerEmail = _aspCurrentUserService.GetCurrentUser().Email,
             CustomerName = _aspCurrentUserService.GetCurrentUser().DisplayName,
         };
-        var result = _paymentProcessor.CreatePaymentSession(fasPayment, subcriptionPlan.IsOneTimePayment);
+        var result = _paymentProcessor.CreatePaymentSession(fasPayment, subcriptionPlan.IsOneTimePayment, newPaymentSubscriptionIm.SuccessUrl, newPaymentSubscriptionIm.FailureUrl);
 
         return new InitialisedPaymentLinkVm(result.SessionUrl);
     }

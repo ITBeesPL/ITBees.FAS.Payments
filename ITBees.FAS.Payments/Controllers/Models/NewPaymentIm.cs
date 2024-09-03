@@ -19,4 +19,6 @@ public class NewPaymentIm
     public int IntervalCount { get; set; }
 
     public Guid InvoiceDataGuid { get; set; }
+    public string? SuccessUrl { get; set; }
+    public string? FailureUrl { get; set; }
 }
