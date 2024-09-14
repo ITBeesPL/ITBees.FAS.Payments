@@ -58,9 +58,16 @@ public class ModifiedSubscriptionService : IModifiedSubscriptionService
             });
 
             var operatorEmail = _platformSettingsService.GetSetting("PlatformOperatorNotificationEmail");
+            string modifiedBy = _aspCurrentUserService.CurrentUserIsPlatformOperator() ? _aspCurrentUserService.GetCurrentSessionUser().CurrentUser.DisplayName : "unknown";
             _emailSendingService.SendEmail(_platformSettingsService.GetPlatformDefaultEmailAccount(), new EmailMessage()
             {
-                BodyText = ""
+                Subject = $"Modified subscription plan for company : {company.CompanyName}",
+                BodyText = "This is notification about change subscription plan by some platform operator. \n" +
+                           $"Company : {company.CompanyName} has now subscription plan - {company.CompanyPlatformSubscription.SubscriptionPlanName} \n" +
+                           $"active to {company.CompanyPlatformSubscription.SubscriptionActiveTo.ToString()}\n\n" +
+                           $"Platform : {_platformSettingsService.GetSetting("SiteUrl")}\n\n" +
+                           $"Modified by {modifiedBy}",
+                Recipients = operatorEmail
             });
 
             return new ModifiedSubscriptionResultVm()
