@@ -43,7 +43,7 @@ class PaymentSessionCreator : IPaymentSessionCreator
     public void CloseSuccessfulPayment(Guid guid)
     {
         _logger.LogDebug("Closing payment session started...");
-        var pa = _paymentSessionRoRepo.GetData(x => x.Guid == guid);
+
         
         var paymentSession = _paymentSessionRoRepo.GetFirst(x => x.Guid == guid, 
             x=>x.InvoiceData, 
