@@ -40,16 +40,34 @@ class ApplySubscriptionPlanToCompanyService : IApplySubscriptionPlanToCompanySer
                 throw new ArgumentException(Translate.Get(() => Translations.ApplySubscriptionPlan.Errors.TrialPlanAlreadyUsed, language));
             }
         }
-        _companyRwRepo.UpdateData(x => x.Guid == companyGuid, x =>
-        {
-            if (subscriptionPlan.IsTrial)
+        _companyRwRepo.UpdateData(
+            x => x.Guid == companyGuid,
+            x =>
             {
-                x.CompanyPlatformSubscription.TrialNotAvailable = true;
-            }
-            _logger.LogDebug($"x.CompanyPlatformSubscription is null {x.CompanyPlatformSubscription == null}");
-            x.CompanyPlatformSubscription.SubscriptionPlanGuid = subscriptionPlan.Guid;
-            x.CompanyPlatformSubscription.SubscriptionPlanName = subscriptionPlan.PlanName;
-            x.CompanyPlatformSubscription.SubscriptionActiveTo = DateTime.Now.AddMonths(subscriptionPlan.Interval).AddDays(subscriptionPlan.IntervalDays);
-        }, x=>x.CompanyPlatformSubscription);
+                if (subscriptionPlan.IsTrial)
+                {
+                    x.CompanyPlatformSubscription.TrialNotAvailable = true;
+                }
+                if (x.CompanyPlatformSubscription == null)
+                {
+                    x.CompanyPlatformSubscription = new CompanyPlatformSubscription()
+                    {
+                        SubscriptionPlanGuid = subscriptionPlan.Guid,
+                        SubscriptionPlanName = subscriptionPlan.PlanName,
+                        SubscriptionActiveTo = DateTime.Now
+                            .AddMonths(subscriptionPlan.Interval)
+                            .AddDays(subscriptionPlan.IntervalDays)
+                    };
+                }
+                else
+                {
+                    x.CompanyPlatformSubscription.SubscriptionPlanGuid = subscriptionPlan.Guid;
+                    x.CompanyPlatformSubscription.SubscriptionPlanName = subscriptionPlan.PlanName;
+                    x.CompanyPlatformSubscription.SubscriptionActiveTo = DateTime.Now
+                        .AddMonths(subscriptionPlan.Interval)
+                        .AddDays(subscriptionPlan.IntervalDays);
+                }
+            },
+            x => x.CompanyPlatformSubscription);
     }
 }
