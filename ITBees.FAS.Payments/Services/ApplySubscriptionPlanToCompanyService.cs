@@ -34,7 +34,7 @@ class ApplySubscriptionPlanToCompanyService : IApplySubscriptionPlanToCompanySer
         if (subscriptionPlan.IsTrial)
         {
             var company = _companyRoRepo.GetFirst(x => x.Guid == companyGuid, x=>x.CompanyPlatformSubscription);
-            if (company.CompanyPlatformSubscription.TrialNotAvailable)
+            if (company.CompanyPlatformSubscription is { TrialNotAvailable: true })
             {
                 var language = _aspCurrentUserService.GetCurrentUser() == null ? new En() : _aspCurrentUserService.GetCurrentUser().Language;
                 throw new ArgumentException(Translate.Get(() => Translations.ApplySubscriptionPlan.Errors.TrialPlanAlreadyUsed, language));
