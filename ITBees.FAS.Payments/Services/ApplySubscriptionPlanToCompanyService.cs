@@ -33,7 +33,7 @@ class ApplySubscriptionPlanToCompanyService : IApplySubscriptionPlanToCompanySer
 
         if (subscriptionPlan.IsTrial)
         {
-            var company = _companyRoRepo.GetFirst(x => x.Guid == companyGuid, x=>x.CompanyPlatformSubscription);
+            var company = _companyRoRepo.GetFirst(x => x.Guid == companyGuid, x => x.CompanyPlatformSubscription);
             if (company.CompanyPlatformSubscription is { TrialNotAvailable: true })
             {
                 var language = _aspCurrentUserService.GetCurrentUser() == null ? new En() : _aspCurrentUserService.GetCurrentUser().Language;
@@ -46,8 +46,10 @@ class ApplySubscriptionPlanToCompanyService : IApplySubscriptionPlanToCompanySer
             {
                 if (subscriptionPlan.IsTrial)
                 {
-                    x.CompanyPlatformSubscription.TrialNotAvailable = true;
+                    if (x.CompanyPlatformSubscription != null)
+                        x.CompanyPlatformSubscription.TrialNotAvailable = true;
                 }
+
                 if (x.CompanyPlatformSubscription == null)
                 {
                     x.CompanyPlatformSubscription = new CompanyPlatformSubscription()
@@ -56,7 +58,8 @@ class ApplySubscriptionPlanToCompanyService : IApplySubscriptionPlanToCompanySer
                         SubscriptionPlanName = subscriptionPlan.PlanName,
                         SubscriptionActiveTo = DateTime.Now
                             .AddMonths(subscriptionPlan.Interval)
-                            .AddDays(subscriptionPlan.IntervalDays)
+                            .AddDays(subscriptionPlan.IntervalDays),
+                        TrialNotAvailable = subscriptionPlan.IsTrial
                     };
                 }
                 else
