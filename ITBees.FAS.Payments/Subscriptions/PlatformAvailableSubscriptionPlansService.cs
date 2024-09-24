@@ -53,7 +53,11 @@ class PlatformAvailableSubscriptionPlansService : IPlatformAvailableSubscription
     {
         var result = _platformSubscriptionPlanRoPlan
             .GetDataQueryable(x => x.IsActive, 
-                x=>x.PlanFeatures, x=>x.Language).Include(x=>x.PlanFeatures).ThenInclude(x=>x.PlatformFeature).ToList();
+                x=>x.PlanFeatures, x=>x.Language)
+            .Include(x=>x.PlanFeatures)
+            .ThenInclude(x=>x.PlatformFeature)
+            .OrderBy(x=>x.Position)
+            .ToList();
 
         return result.Select(x=>new PlatformSubscriptionPlanVm(x)).ToList();
     }
