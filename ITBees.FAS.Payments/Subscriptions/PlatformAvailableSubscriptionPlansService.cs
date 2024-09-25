@@ -74,6 +74,8 @@ class PlatformAvailableSubscriptionPlansService : IPlatformAvailableSubscription
             {
                 yield return new PlatformSubscriptionPlanVm(x);
             }
+
+            yield break;
         }
 
         foreach (var x in result)
