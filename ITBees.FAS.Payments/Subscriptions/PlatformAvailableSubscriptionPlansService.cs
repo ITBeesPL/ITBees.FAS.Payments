@@ -84,6 +84,7 @@ class PlatformAvailableSubscriptionPlansService : IPlatformAvailableSubscription
                 IsTrial = x.IsTrial,
                 Language = x.Language.Name,
                 Position = x.Position,
+                PlanFeatures = new List<PlanFeatureVm>(),
                 LanguageId = x.LanguageId,
                 MostPopular = x.MostPopular,
                 PlanDescription = await _runtimeTranslationService.GetTranslation(x.PlanDescription, lang, true),
