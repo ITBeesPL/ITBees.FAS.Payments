@@ -17,8 +17,8 @@ public class PlatformAvailableSubscriptionPlansController : RestfulControllerBas
 
     [HttpGet]
     [Produces(typeof(List<PlatformSubscriptionPlanVm>))]
-    public IActionResult Get()
+    public IActionResult Get([FromHeader(Name = "Accept-Language")] string acceptLanguage)
     {
-        return ReturnOkResult(() => _availableSubscriptionPlansService.GetAllActivePlans());
+        return ReturnOkResult(() => _availableSubscriptionPlansService.GetAllActivePlans(acceptLanguage));
     }
 }

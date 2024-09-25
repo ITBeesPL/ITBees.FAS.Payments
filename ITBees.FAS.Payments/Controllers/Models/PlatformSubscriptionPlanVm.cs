@@ -1,10 +1,13 @@
 ﻿using ITBees.FAS.Payments.Interfaces.Models;
+using ITBees.Models.Languages;
+using ITBees.Translations.Interfaces;
 
 namespace ITBees.FAS.Payments.Controllers.Models;
 
 public class PlatformSubscriptionPlanVm
 {
     public PlatformSubscriptionPlanVm() { }
+
     public PlatformSubscriptionPlanVm(PlatformSubscriptionPlan x)
     {
         this.Title = x.Title;

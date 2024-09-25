@@ -3,6 +3,7 @@ using ITBees.FAS.Payments.Interfaces.Models;
 using ITBees.FAS.Payments.Services;
 using ITBees.FAS.Payments.Subscriptions;
 using ITBees.FAS.Setup;
+using ITBees.Interfaces.Lang;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -43,6 +44,12 @@ public class PaymentsManagerSetup : IFasDependencyRegistrationWithGenerics
         services.AddScoped<IPaymentDbLoggerService, PaymentDbLoggerService>();
         services.AddScoped<IApplySubscriptionPlanToCompanyService, ApplySubscriptionPlanToCompanyService>();
         services.AddScoped<IApplySubscriptionPlanAsPlatformOperatorService, ApplySubscriptionPlanAsPlatformOperatorService>();
+        if (services.Any(descriptor =>
+                descriptor.ServiceType == typeof(ILanguageFactory)) == false)
+        {
+            throw new Exception(
+                "You must implement and register ILanguageFactory interface for proper work fas payment module");
+        };
     }
 
     public static void RegisterDbModels(ModelBuilder modelBuilder)

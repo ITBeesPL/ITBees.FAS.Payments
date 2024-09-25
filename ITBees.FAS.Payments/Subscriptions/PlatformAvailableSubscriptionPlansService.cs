@@ -1,7 +1,10 @@
 ﻿using ITBees.FAS.Payments.Controllers.Models;
 using ITBees.FAS.Payments.Interfaces;
 using ITBees.FAS.Payments.Interfaces.Models;
+using ITBees.Interfaces.Lang;
 using ITBees.Interfaces.Repository;
+using ITBees.Models.Languages;
+using ITBees.Translations.Interfaces;
 using ITBees.UserManager.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,24 +15,29 @@ class PlatformAvailableSubscriptionPlansService : IPlatformAvailableSubscription
     private readonly IWriteOnlyRepository<PlatformSubscriptionPlan> _platformSubscriptionPlanRwRepo;
     private readonly IReadOnlyRepository<PlatformSubscriptionPlan> _platformSubscriptionPlanRoPlan;
     private readonly IAspCurrentUserService _aspCurrentUserService;
+    private readonly IRuntimeTranslationService _runtimeTranslationService;
+    private readonly ILanguageFactory _languageFactory;
 
     public PlatformAvailableSubscriptionPlansService(IWriteOnlyRepository<PlatformSubscriptionPlan> platformSubscriptionPlanRwRepo,
         IReadOnlyRepository<PlatformSubscriptionPlan> platformSubscriptionPlanRoPlan,
-        IAspCurrentUserService aspCurrentUserService)
+        IAspCurrentUserService aspCurrentUserService,
+        IRuntimeTranslationService runtimeTranslationService,
+        ILanguageFactory languageFactory)
     {
         _platformSubscriptionPlanRwRepo = platformSubscriptionPlanRwRepo;
         _platformSubscriptionPlanRoPlan = platformSubscriptionPlanRoPlan;
         _aspCurrentUserService = aspCurrentUserService;
+        _runtimeTranslationService = runtimeTranslationService;
+        _languageFactory = languageFactory;
     }
     public PlatformSubscriptionPlanVm CreateNew(PlatformSubscriptionPlanIm selectedSubscriptionPlanIm)
     {
-        //todo security - check user can create plan for this company
-        var currentUser = _aspCurrentUserService.GetCurrentUser();
+        this.ThrowUnauthorizedExceptionIfUserIsNotPlatoformOperator();
         var result = _platformSubscriptionPlanRwRepo.InsertData(new PlatformSubscriptionPlan()
         {
             Value = selectedSubscriptionPlanIm.Value,
             Created = DateTime.Now,
-            CreatedByGuid = currentUser.Guid,
+            CreatedByGuid = _aspCurrentUserService.GetCurrentUser().Guid,
             Expires = selectedSubscriptionPlanIm.Expires,
             Interval = selectedSubscriptionPlanIm.Interval,
             IsActive = selectedSubscriptionPlanIm.IsActive,
@@ -42,30 +50,89 @@ class PlatformAvailableSubscriptionPlansService : IPlatformAvailableSubscription
             PlanDescription = selectedSubscriptionPlanIm.PlanDescription,
             ButtonText = selectedSubscriptionPlanIm.ButtonText,
             BadgeText = selectedSubscriptionPlanIm.BadgeText,
-    });
+        });
 
         var resultData = _platformSubscriptionPlanRoPlan.GetData(x => x.Guid == result.Guid, x => x.CreatedBy).First();
 
         return new PlatformSubscriptionPlanVm(resultData);
     }
 
-    public List<PlatformSubscriptionPlanVm> GetAllActivePlans()
+    public async IAsyncEnumerable<PlatformSubscriptionPlanVm> GetAllActivePlans(string acceptLanguage)
     {
+        var lang = GetCurrentUserLanguage(acceptLanguage);
         var result = _platformSubscriptionPlanRoPlan
-            .GetDataQueryable(x => x.IsActive, 
-                x=>x.PlanFeatures, x=>x.Language)
-            .Include(x=>x.PlanFeatures)
-            .ThenInclude(x=>x.PlatformFeature)
-            .OrderBy(x=>x.Position)
+            .GetDataQueryable(x => x.IsActive,
+                x => x.PlanFeatures, x => x.Language)
+            .Include(x => x.PlanFeatures)
+            .ThenInclude(x => x.PlatformFeature)
+            .OrderBy(x => x.Position)
             .ToList();
+        foreach (var x in result)
+        {
+            var planVm = new PlatformSubscriptionPlanVm()
+            {
+                IsOneTimePayment = x.IsOneTimePayment,
+                BadgeText = await _runtimeTranslationService.GetTranslation(x.BadgeText, lang, true),
+                ButtonText = await _runtimeTranslationService.GetTranslation(x.ButtonText, lang, true),
+                Currency = x.Currency,
+                Expires = x.Expires,
+                GroupName = x.GroupName,
+                Guid = x.Guid,
+                Interval = x.Interval,
+                IntervalDays = x.IntervalDays,
+                IsActive = x.IsActive,
+                IsTrial = x.IsTrial,
+                Language = x.Language.Name,
+                Position = x.Position,
+                LanguageId = x.LanguageId,
+                MostPopular = x.MostPopular,
+                PlanDescription = await _runtimeTranslationService.GetTranslation(x.PlanDescription, lang, true),
+                PlanName = await _runtimeTranslationService.GetTranslation(x.PlanName, lang, true),
+                Title = await _runtimeTranslationService.GetTranslation(x.Title, lang, true),
+                Value = x.Value
+            };
 
-        return result.Select(x=>new PlatformSubscriptionPlanVm(x)).ToList();
+            await foreach (var feature in GetPlanFeaturesVms(x.PlanFeatures, lang))
+            {
+                planVm.PlanFeatures.Add(feature);
+            }
+
+            yield return planVm;
+        }
+    }
+
+    private async IAsyncEnumerable<PlanFeatureVm> GetPlanFeaturesVms(List<PlanFeature> planFeatures, Language lang)
+    {
+        foreach (var x in planFeatures)
+        {
+            yield return new PlanFeatureVm()
+            {
+                Position = x.Position,
+                IsActive = x.IsActive,
+                Description = await _runtimeTranslationService.GetTranslation(x.Description, lang, true),
+                FeatureName = x.PlatformFeature?.FeatureName,
+                IsAvailable = x.IsAvailable,
+                PlanFeatureId = x.Id,
+                PlatformFeatureId = x.PlatformFeatureId
+            };
+        }
+    }
+
+    private Language GetCurrentUserLanguage(string acceptLanguage)
+    {
+        var currentUser = _aspCurrentUserService.GetCurrentUser();
+        if (currentUser != null)
+        {
+            return currentUser.Language;
+        }
+
+        return _languageFactory.Get(acceptLanguage);
     }
 
     public PlatformSubscriptionPlanVm Update(PlatformSubscriptionPlanUm selectedSubscriptionPlanIm)
     {
-        //todo security - check user can create plan for this company
-        var currentUser = _aspCurrentUserService.GetCurrentUser();
+        ThrowUnauthorizedExceptionIfUserIsNotPlatoformOperator();
+
         var result = _platformSubscriptionPlanRwRepo.UpdateData(x => x.Guid == selectedSubscriptionPlanIm.Guid, x =>
         {
             x.Value = selectedSubscriptionPlanIm.Value;
@@ -92,14 +159,21 @@ class PlatformAvailableSubscriptionPlansService : IPlatformAvailableSubscription
 
     public void Delete(Guid platformSubscriptionPlanGuid)
     {
-        //todo security - check user can create plan for this company
-        var currentUser = _aspCurrentUserService.GetCurrentUser();
+        ThrowUnauthorizedExceptionIfUserIsNotPlatoformOperator();
+
         var result = _platformSubscriptionPlanRwRepo.DeleteData(x => x.Guid == platformSubscriptionPlanGuid);
+    }
+
+    private void ThrowUnauthorizedExceptionIfUserIsNotPlatoformOperator()
+    {
+        if (_aspCurrentUserService.CurrentUserIsPlatformOperator() == false)
+        {
+            throw new UnauthorizedAccessException("You are not allowed to access this method");
+        }
     }
 
     public PlatformSubscriptionPlanVm Get(Guid selectedSubscriptionPlanGuid)
     {
-        //todo security - check user can create plan for this company
         var result = _platformSubscriptionPlanRoPlan.GetData(x => x.Guid == selectedSubscriptionPlanGuid).First();
 
         return new PlatformSubscriptionPlanVm(result);

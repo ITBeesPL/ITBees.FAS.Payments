@@ -8,5 +8,5 @@ public interface IPlatformAvailableSubscriptionPlansService
     void Delete(Guid platformSubscriptionPlanGuid);
     PlatformSubscriptionPlanVm Update(PlatformSubscriptionPlanUm selectedSubscriptionPlanIm);
     PlatformSubscriptionPlanVm CreateNew(PlatformSubscriptionPlanIm selectedSubscriptionPlanIm);
-    List<PlatformSubscriptionPlanVm> GetAllActivePlans();
+    IAsyncEnumerable<PlatformSubscriptionPlanVm> GetAllActivePlans(string acceptLanguage);
 }
