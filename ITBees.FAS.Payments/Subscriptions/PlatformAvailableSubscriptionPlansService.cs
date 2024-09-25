@@ -67,6 +67,15 @@ class PlatformAvailableSubscriptionPlansService : IPlatformAvailableSubscription
             .ThenInclude(x => x.PlatformFeature)
             .OrderBy(x => x.Position)
             .ToList();
+
+        if (result.FirstOrDefault()?.LanguageId == lang.Id)
+        {
+            foreach (var x in result)
+            {
+                yield return new PlatformSubscriptionPlanVm(x);
+            }
+        }
+
         foreach (var x in result)
         {
             var planVm = new PlatformSubscriptionPlanVm()
