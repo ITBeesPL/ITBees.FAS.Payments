@@ -111,7 +111,7 @@ class PlatformAvailableSubscriptionPlansService : IPlatformAvailableSubscription
                 Position = x.Position,
                 IsActive = x.IsActive,
                 Description = await _runtimeTranslationService.GetTranslation(x.Description, lang, true),
-                FeatureName = x.PlatformFeature?.FeatureName,
+                FeatureName = await _runtimeTranslationService.GetTranslation(x.PlatformFeature?.FeatureName, lang, true),
                 IsAvailable = x.IsAvailable,
                 PlanFeatureId = x.Id,
                 PlatformFeatureId = x.PlatformFeatureId
