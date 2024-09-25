@@ -45,7 +45,7 @@ public class PaymentsManagerSetup : IFasDependencyRegistrationWithGenerics
         services.AddScoped<IApplySubscriptionPlanToCompanyService, ApplySubscriptionPlanToCompanyService>();
         services.AddScoped<IApplySubscriptionPlanAsPlatformOperatorService, ApplySubscriptionPlanAsPlatformOperatorService>();
         if (services.Any(descriptor =>
-                descriptor.ServiceType == typeof(ILanguageFactory)) == false)
+                descriptor.ServiceType == typeof(ILanguageSingletonFactory)) == false)
         {
             throw new Exception(
                 "You must implement and register ILanguageFactory interface for proper work fas payment module");

@@ -16,13 +16,13 @@ class PlatformAvailableSubscriptionPlansService : IPlatformAvailableSubscription
     private readonly IReadOnlyRepository<PlatformSubscriptionPlan> _platformSubscriptionPlanRoPlan;
     private readonly IAspCurrentUserService _aspCurrentUserService;
     private readonly IRuntimeTranslationService _runtimeTranslationService;
-    private readonly ILanguageFactory _languageFactory;
+    private readonly ILanguageSingletonFactory _languageFactory;
 
     public PlatformAvailableSubscriptionPlansService(IWriteOnlyRepository<PlatformSubscriptionPlan> platformSubscriptionPlanRwRepo,
         IReadOnlyRepository<PlatformSubscriptionPlan> platformSubscriptionPlanRoPlan,
         IAspCurrentUserService aspCurrentUserService,
         IRuntimeTranslationService runtimeTranslationService,
-        ILanguageFactory languageFactory)
+        ILanguageSingletonFactory languageFactory)
     {
         _platformSubscriptionPlanRwRepo = platformSubscriptionPlanRwRepo;
         _platformSubscriptionPlanRoPlan = platformSubscriptionPlanRoPlan;
