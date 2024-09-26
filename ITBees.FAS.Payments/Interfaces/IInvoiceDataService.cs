@@ -7,4 +7,5 @@ public interface IInvoiceDataService
     InvoiceDataVm Create(InvoiceDataIm invoiceDataIm);
     InvoiceDataVm Get(Guid companyGuid);
     InvoiceDataVm Update(InvoiceDataUm invoiceDataUm);
+    InvoiceDataVm CreateNewEmptyInvoiceData(Guid companyGuid);
 }

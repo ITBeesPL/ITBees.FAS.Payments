@@ -119,36 +119,41 @@ public class InvoiceDataService : IInvoiceDataService
 
         if (invoiceData == null)
         {
-            var company = _companyRoRepo.GetData(x => x.Guid == companyGuid).FirstOrDefault();
-            if (company == null)
-            {
-                throw new ResultNotFoundException("Company not found");
-            }
-
-            var entity = new InvoiceData()
-            {
-                City = company.City == null ? "" : company.City,
-                CompanyGuid = company.Guid,
-                CompanyName = company.CompanyName,
-                Country = "",
-                Created = DateTime.Now,
-                CreatedByGuid = _aspCurrentUserService.GetCurrentUserGuid().Value,
-                InvoiceEmail = _aspCurrentUserService.GetCurrentUser().Email,
-                InvoiceRequested = string.IsNullOrEmpty(company.Nip) ? true : false,
-                IsActive = true,
-                NIP = company.Nip == null ? "" : company.Nip,
-                PostCode = company.PostCode == null ? "" : company.PostCode,
-                Street = company.Street == null ? "" : company.Street,
-                SubscriptionPlanGuid = null
-            };
-
-            var result = _invoiceDataRwRepo.InsertData(entity);
-
-            return new InvoiceDataVm(_invoiceDataRoRepo.GetFirst(x => x.Guid == result.Guid, x => x.Company,
-                x => x.CreatedBy, x => x.SubscriptionPlan));
+            return CreateNewEmptyInvoiceData(companyGuid);
         }
 
         return new InvoiceDataVm(invoiceData);
+    }
+
+    public InvoiceDataVm CreateNewEmptyInvoiceData(Guid companyGuid)
+    {
+        var company = _companyRoRepo.GetData(x => x.Guid == companyGuid).FirstOrDefault();
+        if (company == null)
+        {
+            throw new ResultNotFoundException("Company not found");
+        }
+
+        var entity = new InvoiceData()
+        {
+            City = company.City == null ? "" : company.City,
+            CompanyGuid = company.Guid,
+            CompanyName = company.CompanyName,
+            Country = "",
+            Created = DateTime.Now,
+            CreatedByGuid = _aspCurrentUserService.GetCurrentUserGuid().Value,
+            InvoiceEmail = _aspCurrentUserService.GetCurrentUser().Email,
+            InvoiceRequested = string.IsNullOrEmpty(company.Nip) ? false : true,
+            IsActive = true,
+            NIP = company.Nip == null ? "" : company.Nip,
+            PostCode = company.PostCode == null ? "" : company.PostCode,
+            Street = company.Street == null ? "" : company.Street,
+            SubscriptionPlanGuid = null
+        };
+
+        var result = _invoiceDataRwRepo.InsertData(entity);
+
+        return new InvoiceDataVm(_invoiceDataRoRepo.GetFirst(x => x.Guid == result.Guid, x => x.Company,
+            x => x.CreatedBy, x => x.SubscriptionPlan));
     }
 
     public InvoiceDataVm Update(InvoiceDataUm invoiceDataUm)

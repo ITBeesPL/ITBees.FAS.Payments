@@ -18,6 +18,7 @@ class PaymentSubscriptionService : IPaymentSubscriptionService
     private readonly IPaymentSessionCreator _paymentSessionCreator;
     private readonly IApplySubscriptionPlanAsPlatformOperatorService _applySubscriptionPlanAsPlatformOperatorService;
     private readonly IPlatformSettingsService _platformSettingsService;
+    private readonly IInvoiceDataService _invoiceDataService;
     private readonly IReadOnlyRepository<PaymentSession> _paymentSessionRoRepo;
 
     public PaymentSubscriptionService(IAspCurrentUserService aspCurrentUserService,
@@ -27,7 +28,8 @@ class PaymentSubscriptionService : IPaymentSubscriptionService
         IFasPaymentProcessor paymentProcessor,
         IPaymentSessionCreator paymentSessionCreator,
         IApplySubscriptionPlanAsPlatformOperatorService applySubscriptionPlanAsPlatformOperatorService,
-        IPlatformSettingsService platformSettingsService)
+        IPlatformSettingsService platformSettingsService,
+        IInvoiceDataService invoiceDataService)
     {
         _aspCurrentUserService = aspCurrentUserService;
         _platformSubscriptionPlanRoRepo = platformSubscriptionPlanRoRepo;
@@ -37,6 +39,7 @@ class PaymentSubscriptionService : IPaymentSubscriptionService
         _paymentSessionCreator = paymentSessionCreator;
         _applySubscriptionPlanAsPlatformOperatorService = applySubscriptionPlanAsPlatformOperatorService;
         _platformSettingsService = platformSettingsService;
+        _invoiceDataService = invoiceDataService;
     }
 
     public InitialisedPaymentLinkVm CreateNewPaymentSubscriptionSession(
@@ -44,6 +47,16 @@ class PaymentSubscriptionService : IPaymentSubscriptionService
     {
         var invoiceData = _invoiceDataRoRepo
             .GetData(x => x.CompanyGuid == newPaymentSubscriptionIm.CompanyGuid && x.IsActive).FirstOrDefault();
+
+        if (invoiceData == null)
+        {
+            var newEmptyInvoiceData = _invoiceDataService.CreateNewEmptyInvoiceData(newPaymentSubscriptionIm.CompanyGuid);
+            invoiceData = new InvoiceData()
+            {
+                Guid = newEmptyInvoiceData.Guid,
+                CompanyGuid = newEmptyInvoiceData.CompanyGuid
+            };
+        }
         if (invoiceData == null)
         {
             throw new Exception("Could not find user invoice data");
