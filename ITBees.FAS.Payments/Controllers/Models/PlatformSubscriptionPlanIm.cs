@@ -19,4 +19,6 @@ public class PlatformSubscriptionPlanIm
     public int LanguageId { get; set; }
     public string Currency { get; set; }
     public bool IsTrial { get; set; }
+    public bool CustomImplementation { get; set; }
+    public string? CustomImplementationTypeName { get; set; }
 }

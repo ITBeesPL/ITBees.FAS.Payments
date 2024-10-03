@@ -50,6 +50,8 @@ class PlatformAvailableSubscriptionPlansService : IPlatformAvailableSubscription
             PlanDescription = selectedSubscriptionPlanIm.PlanDescription,
             ButtonText = selectedSubscriptionPlanIm.ButtonText,
             BadgeText = selectedSubscriptionPlanIm.BadgeText,
+            CustomImplementation = selectedSubscriptionPlanIm.CustomImplementation,
+            CustomImplementationTypeName =selectedSubscriptionPlanIm.CustomImplementationTypeName
         });
 
         var resultData = _platformSubscriptionPlanRoPlan.GetData(x => x.Guid == result.Guid, x => x.CreatedBy).First();
@@ -101,7 +103,9 @@ class PlatformAvailableSubscriptionPlansService : IPlatformAvailableSubscription
                 PlanDescription = await _runtimeTranslationService.GetTranslation(x.PlanDescription, lang, true),
                 PlanName = await _runtimeTranslationService.GetTranslation(x.PlanName, lang, true),
                 Title = await _runtimeTranslationService.GetTranslation(x.Title, lang, true),
-                Value = x.Value
+                Value = x.Value,
+                CustomImplementation =x.CustomImplementation,
+                CustomImplementationTypeName = x.CustomImplementationTypeName
             };
 
             await foreach (var feature in GetPlanFeaturesVms(x.PlanFeatures, lang))
@@ -163,6 +167,8 @@ class PlatformAvailableSubscriptionPlansService : IPlatformAvailableSubscription
             x.BadgeText = selectedSubscriptionPlanIm.BadgeText;
             x.LanguageId = selectedSubscriptionPlanIm.LanguageId;
             x.Currency = selectedSubscriptionPlanIm.Currency;
+            x.CustomImplementation = selectedSubscriptionPlanIm.CustomImplementation;
+            x.CustomImplementationTypeName = selectedSubscriptionPlanIm.CustomImplementationTypeName;
         }, plan => plan.CreatedBy).First();
 
         return new PlatformSubscriptionPlanVm(result);

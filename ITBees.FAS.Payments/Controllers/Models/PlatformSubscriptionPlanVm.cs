@@ -1,6 +1,4 @@
 ﻿using ITBees.FAS.Payments.Interfaces.Models;
-using ITBees.Models.Languages;
-using ITBees.Translations.Interfaces;
 
 namespace ITBees.FAS.Payments.Controllers.Models;
 
@@ -30,6 +28,8 @@ public class PlatformSubscriptionPlanVm
         LanguageId = x.LanguageId;
         Currency = x.Currency;
         IsTrial = x.IsTrial;
+        CustomImplementation = x.CustomImplementation;
+        CustomImplementationTypeName = x.CustomImplementationTypeName;
     }
 
     public string Language { get; set; }
@@ -52,4 +52,6 @@ public class PlatformSubscriptionPlanVm
     public bool IsOneTimePayment { get; set; }
     public string PlanName { get; set; }
     public bool IsTrial { get; set; }
+    public bool CustomImplementation { get; set; }
+    public string? CustomImplementationTypeName { get; set; }
 }
