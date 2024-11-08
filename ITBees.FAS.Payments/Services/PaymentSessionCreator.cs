@@ -24,7 +24,7 @@ class PaymentSessionCreator : IPaymentSessionCreator
         _logger = logger;
     }
     public PaymentSession CreateNew(DateTime Created, Guid? currentUserGuid,
-        IFasPaymentProcessor paymentProcessor, Guid invoiceDataGuid)
+        IFasPaymentProcessor paymentProcessor, Guid invoiceDataGuid, string paymentOperator)
     {
         var newPaymentSession = new PaymentSession()
         {
@@ -32,7 +32,7 @@ class PaymentSessionCreator : IPaymentSessionCreator
             CreatedByGuid = currentUserGuid,
             Success = false,
             Finished = false,
-            PaymentOperator = paymentProcessor.ProcessorName,
+            PaymentOperator = string.IsNullOrEmpty(paymentOperator) ? paymentProcessor.ProcessorName : paymentOperator,
             InvoiceDataGuid = invoiceDataGuid
         };
 

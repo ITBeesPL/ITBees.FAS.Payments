@@ -8,11 +8,11 @@ using Microsoft.Extensions.Logging;
 namespace ITBees.FAS.Payments.Controllers;
 
 [Authorize]
-public class NewPaymentSubscriptionController : RestfulControllerBase<NewPaymentSubscriptionController>
+public class NewApplePaymentSubscriptionController : RestfulControllerBase<NewApplePaymentSubscriptionController>
 {
     private readonly IPaymentSubscriptionService _paymentSubscriptionService;
 
-    public NewPaymentSubscriptionController(ILogger<NewPaymentSubscriptionController> logger,
+    public NewApplePaymentSubscriptionController(ILogger<NewApplePaymentSubscriptionController> logger,
         IPaymentSubscriptionService paymentSubscriptionService) : base(logger)
     {
         _paymentSubscriptionService = paymentSubscriptionService;
@@ -23,10 +23,10 @@ public class NewPaymentSubscriptionController : RestfulControllerBase<NewPayment
     /// </summary>
     /// <param name="newPaymentIm"></param>
     /// <returns></returns>
-    [Produces(typeof(InitialisedPaymentLinkVm))]
+    [Produces(typeof(InitialisedApplePaymentVm))]
     [HttpPost]
-    public IActionResult Post([FromBody] NewPaymentSubscriptionIm newPaymentSubscriptionIm)
+    public IActionResult Post([FromBody] NewApplePaymentSubscriptionIm newApplePaymentSubscriptionIm)
     {
-        return ReturnOkResult(() => _paymentSubscriptionService.CreateNewPaymentSubscriptionSession(newPaymentSubscriptionIm, string.Empty));
+        return ReturnOkResult(() => _paymentSubscriptionService.CreateNewApplePaymentSubscriptionSession(newApplePaymentSubscriptionIm));
     }
 }

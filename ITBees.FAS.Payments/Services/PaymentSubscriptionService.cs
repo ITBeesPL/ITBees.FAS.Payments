@@ -4,6 +4,7 @@ using ITBees.FAS.Payments.Interfaces.Models;
 using ITBees.Interfaces.Platforms;
 using ITBees.Interfaces.Repository;
 using ITBees.RestfulApiControllers.Exceptions;
+using ITBees.RestfulApiControllers.Models;
 using ITBees.UserManager.Interfaces;
 
 namespace ITBees.FAS.Payments.Services;
@@ -43,7 +44,7 @@ class PaymentSubscriptionService : IPaymentSubscriptionService
     }
 
     public InitialisedPaymentLinkVm CreateNewPaymentSubscriptionSession(
-        NewPaymentSubscriptionIm newPaymentSubscriptionIm)
+        NewPaymentSubscriptionIm newPaymentSubscriptionIm, string paymentOperator)
     {
         var invoiceData = _invoiceDataRoRepo
             .GetData(x => x.CompanyGuid == newPaymentSubscriptionIm.CompanyGuid && x.IsActive).FirstOrDefault();
@@ -83,16 +84,16 @@ class PaymentSubscriptionService : IPaymentSubscriptionService
                 SubscriptionPlanGuid = subcriptionPlan.Guid
             });
 
-            return new InitialisedPaymentLinkVm(_platformSettingsService.GetSetting("PlatformRedirectUrlAfterTrialPlanEnabled"));
+            return new InitialisedPaymentLinkVm(_platformSettingsService.GetSetting("PlatformRedirectUrlAfterTrialPlanEnabled"), null);
         }
 
         var paymentSession = _paymentSessionCreator.CreateNew(DateTime.Now, _aspCurrentUserService.GetCurrentUserGuid(),
-            _paymentProcessor, newPaymentSubscriptionIm.InvoiceDataGuid);
+            _paymentProcessor, newPaymentSubscriptionIm.InvoiceDataGuid, paymentOperator);
 
         var fasBillingPeriod = BillingPeriod.GetBillingPeriod(subcriptionPlan.Interval);
         var fasPayment = new FasPayment()
         {
-            Mode = subcriptionPlan.IsOneTimePayment ? FasPaymentMode.Payment :FasPaymentMode.Subscription,
+            Mode = subcriptionPlan.IsOneTimePayment ? FasPaymentMode.Payment : FasPaymentMode.Subscription,
             PaymentSessionGuid = paymentSession.Guid,
             Products = new List<FasProduct>(){new FasProduct()
             {
@@ -109,7 +110,30 @@ class PaymentSubscriptionService : IPaymentSubscriptionService
         };
         var result = _paymentProcessor.CreatePaymentSession(fasPayment, subcriptionPlan.IsOneTimePayment, newPaymentSubscriptionIm.SuccessUrl, newPaymentSubscriptionIm.FailureUrl);
 
-        return new InitialisedPaymentLinkVm(result.SessionUrl);
+        return new InitialisedPaymentLinkVm(result.SessionUrl, paymentSession.Guid);
+    }
+
+    public InitialisedApplePaymentVm CreateNewApplePaymentSubscriptionSession(
+        NewApplePaymentSubscriptionIm newApplePaymentSubscriptionIm)
+    {
+        var cu = _aspCurrentUserService.GetCurrentUser();
+        var invoiceData = _invoiceDataService.CreateNewEmptyInvoiceData(cu.LastUsedCompanyGuid);
+        var subscriptionPlan = _platformSubscriptionPlanRoRepo.GetData(x => x.AppleProductId == newApplePaymentSubscriptionIm.AppleProductId).FirstOrDefault();
+
+        if (subscriptionPlan == null)
+            throw new FasApiErrorException(new FasApiErrorVm(
+                $"Could not find subscription plan for provided apple product Id : {newApplePaymentSubscriptionIm.AppleProductId}", 404, ""));
+
+        var paymentSession = this.CreateNewPaymentSubscriptionSession(new NewPaymentSubscriptionIm()
+        {
+            CompanyGuid = cu.LastUsedCompanyGuid,
+            FailureUrl = string.Empty,
+            SuccessUrl = string.Empty,
+            InvoiceDataGuid = invoiceData.Guid,
+            PlatformSubscriptionPlanGuid = subscriptionPlan.Guid,
+        }, "ApplePay");
+
+        return new InitialisedApplePaymentVm(paymentSession);
     }
 
     private int GetMaximumIntervalCount(FasBillingPeriod fasBillingPeriod)

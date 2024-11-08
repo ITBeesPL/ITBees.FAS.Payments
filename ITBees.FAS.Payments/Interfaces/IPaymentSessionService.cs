@@ -8,4 +8,5 @@ public interface IPaymentSessionService
     bool ConfirmPayment(Guid paymentSessionGuid);
     void CancelPayment(Guid paymentSessionGuid);
     bool UserCompanyHasEverMadePayment(Guid userAccountGuid);
+    bool FakeAppleConfirmPayment(Guid paymentSessionId);
 }

@@ -44,6 +44,7 @@ public class PaymentsManagerSetup : IFasDependencyRegistrationWithGenerics
         services.AddScoped<IPaymentDbLoggerService, PaymentDbLoggerService>();
         services.AddScoped<IApplySubscriptionPlanToCompanyService, ApplySubscriptionPlanToCompanyService>();
         services.AddScoped<IApplySubscriptionPlanAsPlatformOperatorService, ApplySubscriptionPlanAsPlatformOperatorService>();
+        services.AddScoped<IAppleInAppPurchaseService, AppleInAppPurchaseService>();
         if (services.Any(descriptor =>
                 descriptor.ServiceType == typeof(ILanguageSingletonFactory)) == false)
         {
