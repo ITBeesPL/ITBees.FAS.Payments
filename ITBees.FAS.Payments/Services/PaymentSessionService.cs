@@ -127,7 +127,7 @@ public class PaymentSessionService : IPaymentSessionService
             _paymentSessionRwRepo.UpdateData(x => x.Guid == paymentSessionId, x =>
             {
                 x.Finished = true;
-                x.FinishedDate = new DateTime();
+                x.FinishedDate = DateTime.Now;
                 x.Success = true;
                 x.OperatorTransactionId = operatorTransactionId;
             });
