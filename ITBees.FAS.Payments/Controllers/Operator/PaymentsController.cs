@@ -46,6 +46,7 @@ public class PaymentsController : RestfulControllerBase<PaymentsController>
             html.Append("<th>Success</th>");
             html.Append("<th>Finished Date</th>");
             html.Append("<th>Operator Transaction Id</th>");
+            html.Append("<th>Payment Operator</th>");
             html.Append("<th>Email</th>");
             html.Append("<th>Value</th>");
             html.Append("</tr></thead>");
@@ -60,6 +61,7 @@ public class PaymentsController : RestfulControllerBase<PaymentsController>
                 html.Append("<td>" + item.Success + "</td>");
                 html.Append("<td>" + (item.FinishedDate?.ToString() ?? "") + "</td>");
                 html.Append("<td>" + (item.OperatorTransactionId ?? "") + "</td>");
+                html.Append("<td>" + (item.PaymentOperator ?? "") + "</td>");
                 html.Append("<td>" + item.Email + "</td>");
                 html.Append("<td>" + item.Value + "</td>");
                 html.Append("</tr>");

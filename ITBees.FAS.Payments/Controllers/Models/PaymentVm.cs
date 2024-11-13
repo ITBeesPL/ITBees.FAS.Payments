@@ -19,6 +19,7 @@ public class PaymentVm
         OperatorTransactionId = x.OperatorTransactionId;
         Email = x.CreatedBy.Email;
         Value = x.InvoiceData.SubscriptionPlan == null ? 0 : x.InvoiceData.SubscriptionPlan.Value;
+        PaymentOperator = x.PaymentOperator;
     }
 
     public decimal Value { get; set; }
