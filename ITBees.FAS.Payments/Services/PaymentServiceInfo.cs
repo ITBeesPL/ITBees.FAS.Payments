@@ -32,7 +32,7 @@ public class PaymentServiceInfo : IPaymentServiceInfo
         CheckAccess(authKey);
         var sortOptions = new SortOptions(page, pageSize, sortColumn, sortOrder);
         var paginatedResult = _paymentSessionRoRepo
-            .GetDataPaginated(x => true, sortOptions, x => x.CreatedBy, x => x.InvoiceData)
+            .GetDataPaginated(x => true, sortOptions, x => x.CreatedBy, x => x.InvoiceData, x => x.InvoiceData.SubscriptionPlan)
             .MapTo(x => new PaymentVm(x));
 
         return paginatedResult;
