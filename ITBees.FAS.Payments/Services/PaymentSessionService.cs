@@ -109,7 +109,7 @@ public class PaymentSessionService : IPaymentSessionService
         return false;
     }
 
-    public bool FakeAppleConfirmPayment(Guid paymentSessionId)
+    public bool FakeAppleConfirmPayment(Guid paymentSessionId, string? operatorTransactionId)
     {
         try
         {
@@ -129,6 +129,7 @@ public class PaymentSessionService : IPaymentSessionService
                 x.Finished = true;
                 x.FinishedDate = new DateTime();
                 x.Success = true;
+                x.OperatorTransactionId = operatorTransactionId;
             });
 
             _applySubscriptionPlanToCompanyService.Apply(paymentSession.InvoiceData.SubscriptionPlan, paymentSession.InvoiceData.CompanyGuid);

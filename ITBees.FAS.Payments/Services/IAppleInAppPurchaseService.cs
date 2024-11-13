@@ -38,7 +38,7 @@ public class AppleInAppPurchaseService : IAppleInAppPurchaseService
                 _paymentOperatorLogRwRepo.InsertData(ne);
             }
 
-            _paymentSessionService.FakeAppleConfirmPayment(applePurchaseIm.PaymentSessionId);
+            _paymentSessionService.FakeAppleConfirmPayment(applePurchaseIm.PaymentSessionId, applePurchaseIm.PaymentId);
 
             return new ApplePurchaseConfirmationVm()
             {
