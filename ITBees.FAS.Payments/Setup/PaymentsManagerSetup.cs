@@ -9,25 +9,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace ITBees.FAS.Payments;
+namespace ITBees.FAS.Payments.Setup;
 
 public class PaymentsManagerSetup : IFasDependencyRegistrationWithGenerics
 {
-    
+
     public static void RegisterDefaultPaymentProvider<T>(IServiceCollection services) where T : IFasPaymentProcessor
     {
         services.AddScoped(typeof(IFasPaymentProcessor), typeof(T));
     }
-
-    ///// <summary>
-    ///// This method is fired by ITBees.FAS.Setup, You don't have to use it.
-    ///// </summary>
-    ///// <param name="services"></param>
-    ///// <param name="configurationRoot"></param>
-    //public void Register(IServiceCollection services, IConfigurationRoot configurationRoot)
-    //{
-    //    services.AddScoped<IFasPaymentManager, FasPaymentManager>();
-    //}
 
     public void Register<TContext, TIdentityUser>(IServiceCollection services, IConfigurationRoot configurationRoot) where TContext : DbContext where TIdentityUser : IdentityUser, new()
     {
@@ -45,6 +35,7 @@ public class PaymentsManagerSetup : IFasDependencyRegistrationWithGenerics
         services.AddScoped<IApplySubscriptionPlanToCompanyService, ApplySubscriptionPlanToCompanyService>();
         services.AddScoped<IApplySubscriptionPlanAsPlatformOperatorService, ApplySubscriptionPlanAsPlatformOperatorService>();
         services.AddScoped<IAppleInAppPurchaseService, AppleInAppPurchaseService>();
+        services.AddScoped<IPaymentServiceInfo, PaymentServiceInfo>();
         if (services.Any(descriptor =>
                 descriptor.ServiceType == typeof(ILanguageSingletonFactory)) == false)
         {
@@ -58,10 +49,10 @@ public class PaymentsManagerSetup : IFasDependencyRegistrationWithGenerics
         modelBuilder.Entity<SelectedSubscriptionPlan>().HasKey(x => x.Guid);
         modelBuilder.Entity<SelectedSubscriptionPlan>().HasOne(x => x.PlatformSubscriptionPlan);
         modelBuilder.Entity<PlatformSubscriptionPlan>().HasKey(x => x.Guid);
-        modelBuilder.Entity<PlatformSubscriptionPlan>().HasMany(x => x.PlanFeatures).WithOne(x=>x.PlatformSubscriptionPlan);
+        modelBuilder.Entity<PlatformSubscriptionPlan>().HasMany(x => x.PlanFeatures).WithOne(x => x.PlatformSubscriptionPlan);
         modelBuilder.Entity<InvoiceData>().HasKey(x => x.Guid);
         modelBuilder.Entity<PlanFeature>().HasKey(x => x.Id);
-        modelBuilder.Entity<PlanFeature>().HasOne(x=>x.PlatformFeature);
+        modelBuilder.Entity<PlanFeature>().HasOne(x => x.PlatformFeature);
         modelBuilder.Entity<PlatformFeature>().HasKey(x => x.Id);
         modelBuilder.Entity<PaymentSession>().HasKey(x => x.Guid);
         modelBuilder.Entity<PaymentOperatorLog>().HasKey(x => x.Id);

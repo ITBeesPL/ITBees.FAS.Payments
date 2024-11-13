@@ -20,10 +20,6 @@
     <PackageReference Include="ITBees.RestfulApiControllers" Version="8.0.21" />
   </ItemGroup>  
   
-  <ItemGroup>
-    <Folder Include="Setup\" />
-  </ItemGroup>  
-  
   <!--<ItemGroup>
     <ProjectReference Include="..\..\ITBees.UserManager\ITBees.UserManager\ITBees.UserManager.csproj" />
   </ItemGroup>--> 

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace ITBees.FAS.Payments.Controllers;
+namespace ITBees.FAS.Payments.Controllers.Operator;
 
 [Authorize(Roles = Role.PlatformOperator)]
 public class ApplySubscriptionPlanController : RestfulControllerBase<ApplySubscriptionPlanController>
