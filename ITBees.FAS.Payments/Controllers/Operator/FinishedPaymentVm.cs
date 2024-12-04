@@ -22,7 +22,7 @@ public class FinishedPaymentVm
         Email = x.InvoiceData?.InvoiceEmail;
         PostCode = x.InvoiceData?.PostCode;
         InvoiceRequested = x.InvoiceData?.InvoiceRequested;
-        Amount = x.InvoiceData?.SubscriptionPlan.Value;
+        Amount = x.InvoiceData?.SubscriptionPlan?.Value;
         CreatedBy = x.CreatedBy?.DisplayName;
     }
 
