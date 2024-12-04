@@ -58,7 +58,7 @@ public class FinishedPaymentsController : RestfulControllerBase<FinishedPayments
             {
                 html.Append("<tr>");
                 html.Append("<td>" + item.Created + "</td>");
-                html.Append("<td>" + (item.Finished ? "Yes" : "No") + "</td>");
+                html.Append("<td>" + (item.Finished.Value ? "Yes" : "No") + "</td>");
                 html.Append("<td>" + item.City + "</td>");
                 html.Append("<td>" + item.Nip + "</td>");
                 html.Append("<td>" + item.Street + "</td>");
@@ -66,7 +66,7 @@ public class FinishedPaymentsController : RestfulControllerBase<FinishedPayments
                 html.Append("<td>" + item.CompanyName + "</td>");
                 html.Append("<td>" + item.Email + "</td>");
                 html.Append("<td>" + item.PostCode + "</td>");
-                html.Append("<td>" + (item.InvoiceRequested ? "Yes" : "No") + "</td>");
+                html.Append("<td>" + (item.InvoiceRequested.Value ? "Yes" : "No") + "</td>");
                 html.Append("<td>" + item.Amount + "</td>");
                 html.Append("</tr>");
             }
