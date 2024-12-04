@@ -1,4 +1,5 @@
 ﻿using ITBees.FAS.Payments.Interfaces.Models;
+using ITBees.Models.Languages;
 
 namespace ITBees.FAS.Payments.Controllers.Operator;
 
@@ -10,38 +11,44 @@ public class FinishedPaymentVm
     }
     public FinishedPaymentVm(PaymentSession x)
     {
+        Guid = x.Guid;
         Created = x.Created;
         Finished = x.Finished;
-        City = x.InvoiceData.City;
-        Nip = x.InvoiceData.NIP;
-        Street = x.InvoiceData.Street;
-        Country  =x.InvoiceData.Country;
-        CompanyName = x.InvoiceData.CompanyName;
-        Email = x.InvoiceData.InvoiceEmail;
-        PostCode = x.InvoiceData.PostCode;
-        InvoiceRequested = x.InvoiceData.InvoiceRequested;
-        Amount = x.InvoiceData.SubscriptionPlan.Value;
+        City = x.InvoiceData?.City;
+        Nip = x.InvoiceData?.NIP;
+        Street = x.InvoiceData?.Street;
+        Country  =x.InvoiceData?.Country;
+        CompanyName = x.InvoiceData?.CompanyName;
+        Email = x.InvoiceData?.InvoiceEmail;
+        PostCode = x.InvoiceData?.PostCode;
+        InvoiceRequested = x.InvoiceData?.InvoiceRequested;
+        Amount = x.InvoiceData?.SubscriptionPlan.Value;
+        CreatedBy = x.CreatedBy?.DisplayName;
     }
 
-    public bool InvoiceRequested { get; set; }
+    public string? CreatedBy { get; set; }
 
-    public string PostCode { get; set; }
+    public Guid Guid { get; set; }
 
-    public decimal Amount { get; set; }
+    public bool? InvoiceRequested { get; set; }
 
-    public string Email { get; set; }
+    public string? PostCode { get; set; }
 
-    public string CompanyName { get; set; }
+    public decimal? Amount { get; set; }
 
-    public string Country { get; set; }
+    public string? Email { get; set; }
 
-    public string Street { get; set; }
+    public string? CompanyName { get; set; }
 
-    public string Nip { get; set; }
+    public string? Country { get; set; }
 
-    public string City { get; set; }
+    public string? Street { get; set; }
 
-    public bool Finished { get; set; }
+    public string? Nip { get; set; }
 
-    public DateTime Created { get; set; }
+    public string? City { get; set; }
+
+    public bool? Finished { get; set; }
+
+    public DateTime? Created { get; set; }
 }

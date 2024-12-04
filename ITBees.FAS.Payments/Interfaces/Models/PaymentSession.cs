@@ -16,4 +16,5 @@ public class PaymentSession
     public Guid? InvoiceDataGuid { get; set; }
     public DateTime? FinishedDate { get; set; }
     public string? OperatorTransactionId { get; set; }
+    public bool InvoiceCreated { get; set; }
 }
