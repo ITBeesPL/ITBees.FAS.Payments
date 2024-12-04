@@ -1,4 +1,5 @@
 ﻿using ITBees.FAS.Payments.Controllers.Models;
+using ITBees.FAS.Payments.Controllers.Operator;
 using ITBees.FAS.Payments.Interfaces;
 using ITBees.FAS.Payments.Interfaces.Models;
 using ITBees.Interfaces.Platforms;
@@ -47,6 +48,14 @@ public class PaymentServiceInfo : IPaymentServiceInfo
             .MapTo(x => new PaymentLogVm(x));
 
         return paginatedResult;
+    }
+
+    public PaginatedResult<FinishedPaymentVm> GetFinishedPayments(string? authKey, int? page, int? pageSize, string? sortColumn,
+        SortOrder? sortOrder)
+    {
+        CheckAccess(authKey);
+        return _paymentSessionRoRepo.GetDataPaginated(x => x.Finished && x.Success,
+            new SortOptions(page, pageSize, sortColumn, sortOrder), x => x.InvoiceData, x => x.CreatedBy).MapTo(x => new FinishedPaymentVm(x));
     }
 
     private void CheckAccess(string? authKey)

@@ -8,4 +8,5 @@ public interface IPaymentServiceInfo
 {
     PaginatedResult<PaymentVm> Get(string? authKey, int? page, int? pageSize, string? sortColumn, SortOrder? sortOrder);
     PaginatedResult<PaymentLogVm> GetLogs(string? authKey, int? page, int? pageSize, string? sortColumn, SortOrder? sortOrder);
+    PaginatedResult<FinishedPaymentVm> GetFinishedPayments(string? authKey, int? page, int? pageSize, string? sortColumn, SortOrder? sortOrder);
 }
