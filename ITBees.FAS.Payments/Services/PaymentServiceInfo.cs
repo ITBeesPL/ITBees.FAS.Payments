@@ -55,7 +55,9 @@ public class PaymentServiceInfo : IPaymentServiceInfo
     {
         CheckAccess(authKey);
         return _paymentSessionRoRepo.GetDataPaginated(x => x.Finished && x.Success,
-            new SortOptions(page, pageSize, sortColumn, sortOrder), x => x.InvoiceData, x => x.CreatedBy).MapTo(x => new FinishedPaymentVm(x));
+            new SortOptions(page, pageSize, sortColumn, sortOrder),
+            x => x.InvoiceData, x => x.InvoiceData.SubscriptionPlan,
+            x => x.CreatedBy).MapTo(x => new FinishedPaymentVm(x));
     }
 
     private void CheckAccess(string? authKey)

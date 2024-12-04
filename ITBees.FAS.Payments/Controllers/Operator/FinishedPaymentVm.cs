@@ -22,7 +22,7 @@ public class FinishedPaymentVm
         Email = x.InvoiceData?.InvoiceEmail;
         PostCode = x.InvoiceData?.PostCode;
         InvoiceRequested = x.InvoiceData?.InvoiceRequested;
-        Amount = x.InvoiceData?.SubscriptionPlan?.Value;
+        Amount = x.InvoiceData?.SubscriptionPlan?.Value.ToString("F2");
         CreatedBy = x.CreatedBy?.DisplayName;
     }
 
@@ -34,7 +34,7 @@ public class FinishedPaymentVm
 
     public string? PostCode { get; set; }
 
-    public decimal? Amount { get; set; }
+    public string? Amount { get; set; }
 
     public string? Email { get; set; }
 

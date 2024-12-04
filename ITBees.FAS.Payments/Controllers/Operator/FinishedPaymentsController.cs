@@ -19,21 +19,33 @@ public class FinishedPaymentsController : RestfulControllerBase<FinishedPayments
 
     [HttpGet]
     [Produces<PaginatedResult<FinishedPaymentVm>>]
-    public IActionResult Get(bool viewAsHtml, string? authKey, int? page, int? pageSize, string? sortColumn, SortOrder? sortOrder)
+    public IActionResult Get(bool viewAsHtml, string? authKey, int? page, int? pageSize, string? sortColumn, SortOrder? sortOrder, int? month, int? year)
     {
         var result = _paymentServiceInfo.GetFinishedPayments(authKey, page, pageSize, sortColumn, sortOrder);
+        if (month != null && year != null)
+        {
+            result.Data = result.Data.Where(x => x.Created.Value.Month == month && x.Created.Value.Year == year).ToList();
+        }
 
         if (viewAsHtml)
         {
             var html = new StringBuilder();
 
-            html.Append("<html><body>");
+            html.Append("<html><head><meta charset=\"UTF-8\"></head><body>");
 
-            // Form for authKey and pagination parameters
+            // Form for authKey, month, year, and pagination parameters
             html.Append("<form method='get'>");
             html.Append("Auth Key: <input type='text' name='authKey' value='" + (authKey ?? "") + "' /> ");
+            html.Append("Month: <select name='month'>");
+            for (int i = 1; i <= 12; i++)
+            {
+                html.Append($"<option value='{i}' " + (month == i ? "selected" : "") + $">{i}</option>");
+            }
+            html.Append("</select> ");
+            html.Append("Year: <input type='number' name='year' value='" + (year ?? DateTime.Now.Year) + "' /> ");
             html.Append("<input type='hidden' name='page' value='" + result.CurrentPage + "' />");
             html.Append("<input type='hidden' name='pageSize' value='" + result.ElementsPerPage + "' />");
+            html.Append("<input type='hidden' name='viewAsHtml' value='true' />");
             html.Append("<input type='submit' value='Submit' />");
             html.Append("</form><br/>");
 
@@ -66,7 +78,8 @@ public class FinishedPaymentsController : RestfulControllerBase<FinishedPayments
                 html.Append("<td>" + item.CompanyName + "</td>");
                 html.Append("<td>" + item.Email + "</td>");
                 html.Append("<td>" + item.PostCode + "</td>");
-                html.Append("<td>" + (item.InvoiceRequested.Value ? "Yes" : "No") + "</td>");
+                var yes = item.InvoiceRequested == null ? "" : (item.InvoiceRequested.Value ? "Yes" : "No");
+                html.Append("<td>" + yes + "</td>");
                 html.Append("<td>" + item.Amount + "</td>");
                 html.Append("</tr>");
             }
@@ -79,12 +92,12 @@ public class FinishedPaymentsController : RestfulControllerBase<FinishedPayments
 
             if (result.CurrentPage > 1)
             {
-                html.Append($"<a href='?authKey={authKey}&page={result.CurrentPage - 1}&pageSize={result.ElementsPerPage}'>Previous</a> ");
+                html.Append($"<a href='?authKey={authKey}&month={month}&year={year}&page={result.CurrentPage - 1}&pageSize={result.ElementsPerPage}'>Previous</a> ");
             }
 
             if (result.CurrentPage < result.AllPagesCount)
             {
-                html.Append($"<a href='?authKey={authKey}&page={result.CurrentPage + 1}&pageSize={result.ElementsPerPage}'>Next</a>");
+                html.Append($"<a href='?authKey={authKey}&month={month}&year={year}&page={result.CurrentPage + 1}&pageSize={result.ElementsPerPage}'>Next</a>");
             }
 
             html.Append("</div>");
