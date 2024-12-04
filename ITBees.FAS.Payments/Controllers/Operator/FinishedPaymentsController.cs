@@ -26,6 +26,8 @@ public class FinishedPaymentsController : RestfulControllerBase<FinishedPayments
         {
             result.Data = result.Data.Where(x => x.Created.Value.Month == month && x.Created.Value.Year == year).ToList();
         }
+        
+        decimal totalAmount = result.Data.Sum(x=>Convert.ToDecimal(x.Amount));
 
         if (viewAsHtml)
         {
@@ -85,6 +87,13 @@ public class FinishedPaymentsController : RestfulControllerBase<FinishedPayments
             }
 
             html.Append("</tbody></table>");
+
+            // Summary table for total amount
+            html.Append("<br/><table border='1'>");
+            html.Append("<thead><tr><th>Total Amount</th></tr></thead>");
+            html.Append("<tbody><tr><td>" + totalAmount + "</td></tr></tbody>");
+            html.Append("</table>");
+
 
             // Pagination controls
             html.Append("<div>");
