@@ -86,13 +86,9 @@ public class FinishedPaymentsController : RestfulControllerBase<FinishedPayments
                 html.Append("</tr>");
             }
 
-            html.Append("</tbody></table>");
+            AppendSummaryRow(html, totalAmount.ToString("F2"));
 
-            // Summary table for total amount
-            html.Append("<br/><table border='1'>");
-            html.Append("<thead><tr><th>Total Amount</th></tr></thead>");
-            html.Append("<tbody><tr><td>" + totalAmount + "</td></tr></tbody>");
-            html.Append("</table>");
+            html.Append("</tbody></table>");
 
 
             // Pagination controls
@@ -119,5 +115,22 @@ public class FinishedPaymentsController : RestfulControllerBase<FinishedPayments
         {
             return ReturnOkResult(() => _paymentServiceInfo.GetFinishedPayments(authKey, page, pageSize, sortColumn, sortOrder));
         }
+    }
+
+    private void AppendSummaryRow(StringBuilder html, string value)
+    {
+        html.Append("<tr>");
+        html.Append("<td>" + "</td>");
+        html.Append("<td>" + "</td>");
+        html.Append("<td>" + "</td>");
+        html.Append("<td>" + "</td>");
+        html.Append("<td>" + "</td>");
+        html.Append("<td>" + "</td>");
+        html.Append("<td>" + "</td>");
+        html.Append("<td></td>");
+        html.Append("<td></td>");
+        html.Append("<td>Summary</td>");
+        html.Append("<td>" + value + "</td>");
+        html.Append("</tr>");
     }
 }
