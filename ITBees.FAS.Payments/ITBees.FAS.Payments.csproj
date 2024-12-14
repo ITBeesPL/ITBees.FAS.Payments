@@ -1,30 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    </PropertyGroup>
+
+     <ItemGroup>
+        <PackageReference Include="ITBees.Fas.Setup" Version="8.0.7" />
+        <PackageReference Include="ITBees.Interfaces" Version="8.0.40" />
+        <PackageReference Include="ITBees.Models" Version="8.0.64" />
+        <PackageReference Include="ITBees.UserManager" Version="8.0.190" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+        <PackageReference Include="Stripe.net" Version="47.0.0" />
+        <PackageReference Include="ITBees.RestfulApiControllers" Version="8.0.21" />
+      </ItemGroup>  
   
- <ItemGroup>
-    <PackageReference Include="ITBees.Fas.Setup" Version="8.0.7" />
-    <PackageReference Include="ITBees.Interfaces" Version="8.0.40" />
-    <PackageReference Include="ITBees.Models" Version="8.0.64" />
-    <PackageReference Include="ITBees.UserManager" Version="8.0.190" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="Stripe.net" Version="47.0.0" />
-  </ItemGroup>  
-  
-  <ItemGroup>
-    <PackageReference Include="ITBees.RestfulApiControllers" Version="8.0.21" />
-  </ItemGroup>  
-  
-  <ItemGroup>
-    <ProjectReference Include="..\..\ITBees.PipedriveIntegration\ITBees.PipedriveIntegration\ITBees.PipedriveIntegration.csproj" />
-  </ItemGroup>  
-  
-  <!--<ItemGroup>
-    <ProjectReference Include="..\..\ITBees.UserManager\ITBees.UserManager\ITBees.UserManager.csproj" />
-  </ItemGroup>--> 
+<!--    <ItemGroup>-->
+<!--        <ProjectReference Include="..\..\ITBees.PipedriveIntegration\ITBees.PipedriveIntegration\ITBees.PipedriveIntegration.csproj"/>-->
+<!--        <ProjectReference Include="..\..\ITBees.UserManager\ITBees.UserManager\ITBees.UserManager.csproj"/>-->
+<!--        <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>-->
+<!--        <PackageReference Include="Stripe.net" Version="47.0.0"/>-->
+<!--    </ItemGroup>-->
 </Project>
