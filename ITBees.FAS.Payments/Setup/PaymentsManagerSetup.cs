@@ -21,6 +21,7 @@ public class PaymentsManagerSetup : IFasDependencyRegistrationWithGenerics
 
     public void Register<TContext, TIdentityUser>(IServiceCollection services, IConfigurationRoot configurationRoot) where TContext : DbContext where TIdentityUser : IdentityUser<Guid>, new()
     {
+        services.AddScoped<IPlatformSubscriptionUsageService, PlatformSubscriptionUsageService>();
         services.AddScoped<IModifiedSubscriptionService, ModifiedSubscriptionService>();
         services.AddScoped<IPlatformAvailableSubscriptionPlansService, PlatformAvailableSubscriptionPlansService>();
         services.AddScoped<IPaymentSessionService, PaymentSessionService>();
