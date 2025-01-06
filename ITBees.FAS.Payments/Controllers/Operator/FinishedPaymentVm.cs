@@ -24,7 +24,14 @@ public class FinishedPaymentVm
         InvoiceRequested = x.InvoiceData?.InvoiceRequested;
         Amount = x.InvoiceData?.SubscriptionPlan?.Value.ToString("F2");
         CreatedBy = x.CreatedBy?.DisplayName;
+        InvoiceProductName = x.InvoiceData?.SubscriptionPlan?.PlanName;
+        InvoiceQuantity = 1;
+        
     }
+
+    public int InvoiceQuantity { get; set; }
+
+    public string InvoiceProductName { get; set; }
 
     public string? CreatedBy { get; set; }
 
