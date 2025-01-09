@@ -9,18 +9,13 @@ namespace ITBees.FAS.Payments.Controllers.Operator;
 
 public class PaymentSummaryService : IPaymentSummaryService
 {
-    private readonly IAspCurrentUserService _aspCurrentUserService;
-    private readonly IPlatformSettingsService _platformSettingsService;
     private readonly IReadOnlyRepository<PaymentSession> _paymentSessionRepository;
     private readonly IAccessChecker _accessChecker;
 
-    public PaymentSummaryService(IAspCurrentUserService aspCurrentUserService, 
-        IPlatformSettingsService platformSettingsService, 
+    public PaymentSummaryService(
         IReadOnlyRepository<PaymentSession> paymentSessionRepository,
         IAccessChecker accessChecker)
     {
-        _aspCurrentUserService = aspCurrentUserService;
-        _platformSettingsService = platformSettingsService;
         _paymentSessionRepository = paymentSessionRepository;
         _accessChecker = accessChecker;
     }
