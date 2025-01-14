@@ -63,7 +63,7 @@ public class PaymentsController : RestfulControllerBase<PaymentsController>
                 html.Append("<td>" + (item.OperatorTransactionId ?? "") + "</td>");
                 html.Append("<td>" + (item.PaymentOperator ?? "") + "</td>");
                 html.Append("<td>" + item.Email + "</td>");
-                html.Append("<td>" + item.Value + "</td>");
+                html.Append("<td>" + item.Value.ToString("F2") + "</td>");
                 html.Append("</tr>");
             }
 

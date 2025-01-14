@@ -18,7 +18,7 @@ public class PaymentVm
         FinishedDate = x.FinishedDate;
         OperatorTransactionId = x.OperatorTransactionId;
         Email = x.CreatedBy.Email;
-        Value = x.InvoiceData.SubscriptionPlan == null ? 0 : x.InvoiceData.SubscriptionPlan.Value;
+        Value = x.InvoiceData?.SubscriptionPlan == null ? 0 : x.InvoiceData.SubscriptionPlan.Value;
         PaymentOperator = x.PaymentOperator;
     }
 

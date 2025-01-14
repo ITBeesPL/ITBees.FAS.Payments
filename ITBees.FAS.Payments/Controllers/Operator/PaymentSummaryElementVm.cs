@@ -8,4 +8,5 @@ public class PaymentSummaryElementVm
     public int TotalSuccessCount { get; set; }
     public int TotalInvoicesCreated { get; set; }
     public decimal TotalGrossAmount { get; set; }
+    public decimal SubscriptionValue { get; set; }
 }

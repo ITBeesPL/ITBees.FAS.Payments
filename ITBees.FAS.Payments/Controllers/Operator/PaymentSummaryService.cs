@@ -34,7 +34,9 @@ public class PaymentSummaryService : IPaymentSummaryService
                 Month = g.Key.Month,
                 PaymentOperator = g.Key.PaymentOperator,
                 TotalSuccessCount = g.Count(),
-                TotalGrossAmount = g.Sum(x => x.InvoiceData.SubscriptionPlan.Value)
+                TotalGrossAmount = g.Sum(x => x.InvoiceData.SubscriptionPlan.Value),
+                TotalInvoicesCreated = g.Count(x=>x.InvoiceCreated),
+                SubscriptionValue = g.Key.Value
             })
             .OrderBy(x => x.Year)
             .ThenBy(x => x.Month)
