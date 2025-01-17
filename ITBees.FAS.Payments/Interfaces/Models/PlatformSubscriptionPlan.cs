@@ -10,6 +10,7 @@ public class PlatformSubscriptionPlan
     public bool IsActive { get; set; }
     public DateTime Created { get; set; }
     public DateTime? Expires { get; set; }
+    public DateTime? StartFrom { get; set; }
     public UserAccount CreatedBy { get; set; }
     public Guid CreatedByGuid { get; set; }
     public int Interval { get; set; }

@@ -2,6 +2,7 @@
 using ITBees.Interfaces.Repository;
 using ITBees.Models.Roles;
 using ITBees.RestfulApiControllers;
+using ITBees.UserManager.Controllers.PlatformOperator;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -19,6 +20,7 @@ public class PlatformSubscriptionUsageController : RestfulControllerBase<Platfor
         _platformSubscriptionUsageService = platformSubscriptionUsageService;
     }
 
+    [Produces<PaginatedResult<PlatformUserAccountVm>>]
     [HttpGet]
     public IActionResult Get(Guid platfromSubscriptionPlanGuid, int? page, int? pageSize, string? sortColumn, SortOrder? sortOrder)
     {
