@@ -31,6 +31,8 @@ public class PlatformSubscriptionPlanVm
         CustomImplementation = x.CustomImplementation;
         CustomImplementationTypeName = x.CustomImplementationTypeName;
         AppleProductId = x.AppleProductId;
+        BgColor = x.BgColor;
+        FgColor = x.FgColor;
     }
 
     public string Language { get; set; }
@@ -56,4 +58,6 @@ public class PlatformSubscriptionPlanVm
     public bool CustomImplementation { get; set; }
     public string? CustomImplementationTypeName { get; set; }
     public string? AppleProductId { get; set; }
+    public string BgColor { get; set; }
+    public string FgColor { get; set; }
 }

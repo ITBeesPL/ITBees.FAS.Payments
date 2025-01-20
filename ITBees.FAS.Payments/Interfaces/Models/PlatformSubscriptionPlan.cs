@@ -32,4 +32,6 @@ public class PlatformSubscriptionPlan
     public bool CustomImplementation { get; set; }
     public string? CustomImplementationTypeName { get; set; }
     public string? AppleProductId { get; set; }
+    public string? BgColor { get; set; }
+    public string? FgColor { get; set; }
 }
