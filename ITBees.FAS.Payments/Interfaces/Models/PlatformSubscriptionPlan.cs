@@ -18,6 +18,8 @@ public class PlatformSubscriptionPlan
     public bool IsOneTimePayment { get; set; }
     public string GroupName { get; set; }
     public decimal Value { get; set; }
+    public decimal NetValue { get; set; }
+    public int VatPercentage { get; set; }
     public string Title { get; set; }
     public List<PlanFeature> PlanFeatures { get; set; }
     public int Position { get; set; }
