@@ -13,15 +13,18 @@ public class PaymentServiceInfo : IPaymentServiceInfo
     private readonly IReadOnlyRepository<PaymentOperatorLog> _paymentOperatorLogRoRepo;
     private readonly IReadOnlyRepository<PaymentSession> _paymentSessionRoRepo;
     private readonly IAccessChecker _accessChecker;
+    private readonly IPlatformSettingsService _platformSettingsService;
 
     public PaymentServiceInfo(
         IReadOnlyRepository<PaymentOperatorLog> paymentOperatorLogRoRepo,
         IReadOnlyRepository<PaymentSession> paymentSessionRoRepo, 
-        IAccessChecker accessChecker)
+        IAccessChecker accessChecker,
+        IPlatformSettingsService platformSettingsService)
     {
         _paymentOperatorLogRoRepo = paymentOperatorLogRoRepo;
         _paymentSessionRoRepo = paymentSessionRoRepo;
         _accessChecker = accessChecker;
+        _platformSettingsService = platformSettingsService;
     }
 
     public PaginatedResult<PaymentVm> Get(string? authKey, int? page, int? pageSize, string? sortColumn, SortOrder? sortOrder)
@@ -50,9 +53,10 @@ public class PaymentServiceInfo : IPaymentServiceInfo
         SortOrder? sortOrder)
     {
         _accessChecker.CheckAccess(authKey);
+        var platformName = _platformSettingsService.GetSetting("PlatformName");
         return _paymentSessionRoRepo.GetDataPaginated(x => x.Finished && x.Success,
             new SortOptions(page, pageSize, sortColumn, sortOrder),
             x => x.InvoiceData, x => x.InvoiceData.SubscriptionPlan,
-            x => x.CreatedBy).MapTo(x => new FinishedPaymentVm(x));
+            x => x.CreatedBy).MapTo(x => new FinishedPaymentVm(x, platformName));
     }
 }

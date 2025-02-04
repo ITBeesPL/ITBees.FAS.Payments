@@ -29,6 +29,25 @@ public class FinishedPaymentVm
         
     }
 
+    public FinishedPaymentVm(PaymentSession x, string platformName)
+    {
+        Guid = x.Guid;
+        Created = x.Created;
+        Finished = x.Finished;
+        City = x.InvoiceData?.City;
+        Nip = x.InvoiceData?.NIP;
+        Street = x.InvoiceData?.Street;
+        Country  =x.InvoiceData?.Country;
+        CompanyName = x.InvoiceData?.CompanyName;
+        Email = x.InvoiceData?.InvoiceEmail;
+        PostCode = x.InvoiceData?.PostCode;
+        InvoiceRequested = x.InvoiceData?.InvoiceRequested;
+        Amount = x.InvoiceData?.SubscriptionPlan?.Value.ToString("F2");
+        CreatedBy = x.CreatedBy?.DisplayName;
+        InvoiceProductName = $"{platformName} - {x.InvoiceData?.SubscriptionPlan?.PlanName}";
+        InvoiceQuantity = 1;
+    }
+
     public int InvoiceQuantity { get; set; }
 
     public string InvoiceProductName { get; set; }
