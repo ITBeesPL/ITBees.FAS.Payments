@@ -33,6 +33,7 @@ public class PlatformSubscriptionPlanVm
         AppleProductId = x.AppleProductId;
         BgColor = x.BgColor;
         FgColor = x.FgColor;
+        VatPercentage = x.VatPercentage;
     }
 
     public string Language { get; set; }
@@ -48,6 +49,7 @@ public class PlatformSubscriptionPlanVm
     public string GroupName { get; set; }
     public Guid Guid { get; set; }
     public decimal Value { get; set; }
+    public int VatPercentage { get; set; }
     public DateTime? Expires { get; set; }
     public int Interval { get; set; }
     public int IntervalDays { get; set; }

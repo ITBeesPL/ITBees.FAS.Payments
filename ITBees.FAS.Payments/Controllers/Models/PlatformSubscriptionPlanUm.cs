@@ -4,6 +4,7 @@ public class PlatformSubscriptionPlanUm
 {
     public Guid Guid { get; set; }
     public decimal Value { get; set; }
+    public int VatPercentage { get; set; }
     public DateTime? Expires { get; set; }
     public int Interval { get; set; }
     public int IntervalDays { get; set; }

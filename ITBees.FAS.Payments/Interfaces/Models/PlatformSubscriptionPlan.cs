@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using ITBees.Models.Languages;
 using ITBees.Models.Users;
 
@@ -17,7 +18,9 @@ public class PlatformSubscriptionPlan
     public int IntervalDays { get; set; }
     public bool IsOneTimePayment { get; set; }
     public string GroupName { get; set; }
+    [Column(TypeName = "decimal(18,2)")]
     public decimal Value { get; set; }
+    [Column(TypeName = "decimal(18,2)")]
     public decimal NetValue { get; set; }
     public int VatPercentage { get; set; }
     public string Title { get; set; }
