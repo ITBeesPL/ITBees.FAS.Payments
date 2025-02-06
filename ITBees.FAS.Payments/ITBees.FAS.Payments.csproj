@@ -9,9 +9,9 @@
 
      <ItemGroup>
         <PackageReference Include="ITBees.Fas.Setup" Version="8.0.11" />
-        <PackageReference Include="ITBees.Interfaces" Version="8.0.55" />
+        <PackageReference Include="ITBees.Interfaces" Version="8.0.56" />
         <PackageReference Include="ITBees.Models" Version="8.0.79" />
-        <PackageReference Include="ITBees.UserManager" Version="8.0.259" />
+        <PackageReference Include="ITBees.UserManager" Version="8.0.261" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
         <PackageReference Include="Stripe.net" Version="47.0.0" />
         <PackageReference Include="ITBees.RestfulApiControllers" Version="8.0.22" />
