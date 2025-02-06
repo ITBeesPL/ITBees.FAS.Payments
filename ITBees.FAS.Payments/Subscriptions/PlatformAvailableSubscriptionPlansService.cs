@@ -1,9 +1,9 @@
 ﻿using ITBees.FAS.Payments.Controllers.Models;
 using ITBees.FAS.Payments.Interfaces;
-using ITBees.FAS.Payments.Interfaces.Models;
 using ITBees.Interfaces.Lang;
 using ITBees.Interfaces.Repository;
 using ITBees.Models.Languages;
+using ITBees.Models.Payments;
 using ITBees.Translations.Interfaces;
 using ITBees.UserManager.Interfaces;
 using Microsoft.EntityFrameworkCore;

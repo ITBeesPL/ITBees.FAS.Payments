@@ -1,4 +1,4 @@
-﻿using ITBees.FAS.Payments.Interfaces.Models;
+﻿using ITBees.Models.Payments;
 
 namespace ITBees.FAS.Payments.Interfaces;
 

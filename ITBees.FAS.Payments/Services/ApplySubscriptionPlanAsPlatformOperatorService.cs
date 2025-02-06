@@ -1,8 +1,8 @@
 ﻿using ITBees.FAS.Payments.Controllers.Models;
 using ITBees.FAS.Payments.Interfaces;
-using ITBees.FAS.Payments.Interfaces.Models;
 using ITBees.Interfaces.Repository;
 using ITBees.Models.Companies;
+using ITBees.Models.Payments;
 
 namespace ITBees.FAS.Payments.Services;
 

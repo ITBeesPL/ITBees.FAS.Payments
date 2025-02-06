@@ -6,6 +6,8 @@ using ITBees.FAS.Payments.Services.Operator;
 using ITBees.FAS.Payments.Subscriptions;
 using ITBees.FAS.Setup;
 using ITBees.Interfaces.Lang;
+using ITBees.Models.Companies;
+using ITBees.Models.Payments;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
