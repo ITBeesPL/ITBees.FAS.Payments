@@ -25,4 +25,5 @@ public class PlatformSubscriptionPlanUm
     public string? CustomImplementationTypeName { get; set; }
     public string BgColor { get; set; }
     public string FgColor { get; set; }
+    public string? AppleProductId { get; set; }
 }

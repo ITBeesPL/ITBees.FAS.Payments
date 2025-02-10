@@ -51,7 +51,13 @@ class PlatformAvailableSubscriptionPlansService : IPlatformAvailableSubscription
             ButtonText = selectedSubscriptionPlanIm.ButtonText,
             BadgeText = selectedSubscriptionPlanIm.BadgeText,
             CustomImplementation = selectedSubscriptionPlanIm.CustomImplementation,
-            CustomImplementationTypeName =selectedSubscriptionPlanIm.CustomImplementationTypeName
+            CustomImplementationTypeName =selectedSubscriptionPlanIm.CustomImplementationTypeName,
+            BgColor = selectedSubscriptionPlanIm.BgColor,
+            FgColor = selectedSubscriptionPlanIm.FgColor,
+            VatPercentage  = selectedSubscriptionPlanIm.VatPercentage,
+            IntervalDays = selectedSubscriptionPlanIm.IntervalDays,
+            AppleProductId = selectedSubscriptionPlanIm.AppleProductId,
+            IsTrial = selectedSubscriptionPlanIm.IsTrial,
         });
 
         var resultData = _platformSubscriptionPlanRoPlan.GetData(x => x.Guid == result.Guid, x => x.CreatedBy).First();
@@ -95,7 +101,7 @@ class PlatformAvailableSubscriptionPlansService : IPlatformAvailableSubscription
                 IntervalDays = x.IntervalDays,
                 IsActive = x.IsActive,
                 IsTrial = x.IsTrial,
-                Language = x.Language.Name,
+                Language = x.Language?.Name,
                 Position = x.Position,
                 PlanFeatures = new List<PlanFeatureVm>(),
                 LanguageId = x.LanguageId,
@@ -169,6 +175,12 @@ class PlatformAvailableSubscriptionPlansService : IPlatformAvailableSubscription
             x.Currency = selectedSubscriptionPlanIm.Currency;
             x.CustomImplementation = selectedSubscriptionPlanIm.CustomImplementation;
             x.CustomImplementationTypeName = selectedSubscriptionPlanIm.CustomImplementationTypeName;
+            x.BgColor = selectedSubscriptionPlanIm.BgColor;
+            x.FgColor = selectedSubscriptionPlanIm.FgColor;
+            x.VatPercentage  = selectedSubscriptionPlanIm.VatPercentage;
+            x.IntervalDays = selectedSubscriptionPlanIm.IntervalDays;
+            x.AppleProductId = selectedSubscriptionPlanIm.AppleProductId;
+            x.IsTrial = selectedSubscriptionPlanIm.IsTrial;
         }, plan => plan.CreatedBy).First();
 
         return new PlatformSubscriptionPlanVm(result);
