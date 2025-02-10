@@ -1,4 +1,5 @@
-﻿using ITBees.FAS.Payments.Controllers.Models;
+﻿using ITBees.FAS.Payments.Controllers;
+using ITBees.FAS.Payments.Controllers.Models;
 
 namespace ITBees.FAS.Payments.Interfaces;
 
@@ -9,4 +10,6 @@ public interface IPlatformAvailableSubscriptionPlansService
     PlatformSubscriptionPlanVm Update(PlatformSubscriptionPlanUm selectedSubscriptionPlanIm);
     PlatformSubscriptionPlanVm CreateNew(PlatformSubscriptionPlanIm selectedSubscriptionPlanIm);
     IAsyncEnumerable<PlatformSubscriptionPlanVm> GetAllActivePlans(string acceptLanguage);
+    IAsyncEnumerable<PlatformSubscriptionPlanVm> GetAllDectivatedPlans(string acceptLanguage);
+    PlatformSubscriptionPlanVm DectivatedSubscriptionPlan(DeactivatedSubscriptionPlanIm deactivatedSubscriptionPlanIm);
 }

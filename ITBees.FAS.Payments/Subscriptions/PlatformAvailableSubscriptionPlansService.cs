@@ -123,6 +123,87 @@ class PlatformAvailableSubscriptionPlansService : IPlatformAvailableSubscription
         }
     }
 
+    public async IAsyncEnumerable<PlatformSubscriptionPlanVm> GetAllDectivatedPlans(string acceptLanguage)
+    {
+        var lang = GetCurrentUserLanguage(acceptLanguage);
+        var result = _platformSubscriptionPlanRoPlan
+            .GetDataQueryable(x => x.IsActive == false,
+                x => x.PlanFeatures, x => x.Language)
+            .Include(x => x.PlanFeatures)
+            .ThenInclude(x => x.PlatformFeature)
+            .OrderBy(x => x.Position)
+            .ToList();
+
+        if (result.FirstOrDefault()?.LanguageId == lang.Id)
+        {
+            foreach (var x in result)
+            {
+                yield return new PlatformSubscriptionPlanVm(x);
+            }
+
+            yield break;
+        }
+
+        foreach (var x in result)
+        {
+            var planVm = new PlatformSubscriptionPlanVm()
+            {
+                IsOneTimePayment = x.IsOneTimePayment,
+                BadgeText = await _runtimeTranslationService.GetTranslation(x.BadgeText, lang, true),
+                ButtonText = await _runtimeTranslationService.GetTranslation(x.ButtonText, lang, true),
+                Currency = x.Currency,
+                Expires = x.Expires,
+                GroupName = x.GroupName,
+                Guid = x.Guid,
+                Interval = x.Interval,
+                IntervalDays = x.IntervalDays,
+                IsActive = x.IsActive,
+                IsTrial = x.IsTrial,
+                Language = x.Language?.Name,
+                Position = x.Position,
+                PlanFeatures = new List<PlanFeatureVm>(),
+                LanguageId = x.LanguageId,
+                MostPopular = x.MostPopular,
+                PlanDescription = await _runtimeTranslationService.GetTranslation(x.PlanDescription, lang, true),
+                PlanName = await _runtimeTranslationService.GetTranslation(x.PlanName, lang, true),
+                Title = await _runtimeTranslationService.GetTranslation(x.Title, lang, true),
+                Value = x.Value,
+                CustomImplementation =x.CustomImplementation,
+                CustomImplementationTypeName = x.CustomImplementationTypeName,
+                Created = x.Created,
+                Modified= x.Modified
+            };
+
+            await foreach (var feature in GetPlanFeaturesVms(x.PlanFeatures, lang))
+            {
+                planVm.PlanFeatures.Add(feature);
+            }
+
+            yield return planVm;
+        }
+    }
+
+    public PlatformSubscriptionPlanVm DectivatedSubscriptionPlan(DeactivatedSubscriptionPlanIm deactivatedSubscriptionPlanIm)
+    {
+        _platformSubscriptionPlanRwRepo.UpdateData(x => x.Guid == deactivatedSubscriptionPlanIm.SubscriptionPlanGuid,
+            x =>
+            {
+                x.IsActive = deactivatedSubscriptionPlanIm.CurrentActiveState;
+                x.Modified = DateTime.Now;
+                x.ModifiedByGuid = _aspCurrentUserService.GetCurrentUser().Guid;
+            });
+        
+        var result = _platformSubscriptionPlanRoPlan
+            .GetDataQueryable(x => x.Guid == deactivatedSubscriptionPlanIm.SubscriptionPlanGuid,
+                x => x.PlanFeatures, x => x.Language)
+            .Include(x => x.PlanFeatures)
+            .ThenInclude(x => x.PlatformFeature)
+            .OrderBy(x => x.Position)
+            .First();
+        
+        return new PlatformSubscriptionPlanVm(result);
+    }
+
     private async IAsyncEnumerable<PlanFeatureVm> GetPlanFeaturesVms(List<PlanFeature> planFeatures, Language lang)
     {
         foreach (var x in planFeatures)
@@ -181,6 +262,8 @@ class PlatformAvailableSubscriptionPlansService : IPlatformAvailableSubscription
             x.IntervalDays = selectedSubscriptionPlanIm.IntervalDays;
             x.AppleProductId = selectedSubscriptionPlanIm.AppleProductId;
             x.IsTrial = selectedSubscriptionPlanIm.IsTrial;
+            x.Modified = DateTime.Now;
+            x.ModifiedByGuid = _aspCurrentUserService.GetCurrentUser().Guid;
         }, plan => plan.CreatedBy).First();
 
         return new PlatformSubscriptionPlanVm(result);

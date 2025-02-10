@@ -62,4 +62,6 @@ public class PlatformSubscriptionPlanVm
     public string? AppleProductId { get; set; }
     public string BgColor { get; set; }
     public string FgColor { get; set; }
+    public DateTime Created { get; set; }
+    public DateTime? Modified { get; set; }
 }
