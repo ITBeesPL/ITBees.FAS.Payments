@@ -62,6 +62,33 @@ public class PaymentSessionService : IPaymentSessionService
 
         return new InitialisedPaymentLinkVm(sessionUrl.SessionUrl, paymentSession.Guid);
     }
+    
+    public InitialisedPaymentLinkVm CreateNewPaymentSession(NewMultiPaymentIm newPaymentIm)
+    {
+        var currentUserGuid = _aspCurrentUserService.GetCurrentUserGuid();
+        PaymentSession paymentSession = _paymentSessionCreator.CreateNew(Created: DateTime.Now, currentUserGuid, _paymentProcessor, newPaymentIm.InvoiceDataGuid, string.Empty);
+
+        var sessionUrl = _paymentProcessor.CreatePaymentSession(new FasPayment()
+        {
+            PaymentSessionGuid = paymentSession.Guid,
+            Mode = FasPaymentMode.Payment,
+            Products = new List<FasProduct>()
+            {
+                new FasProduct()
+                {
+                    BillingPeriod = FasBillingPeriod.Monthly,
+                    Currency = newPaymentIm.Currency,
+                    Quantity = newPaymentIm.Quantity,
+                    PaymentTitleOrProductName = newPaymentIm.ProductName,
+                    Price = newPaymentIm.Price,
+                    Interval = newPaymentIm.Interval,
+                    IntervalCount = newPaymentIm.IntervalCount
+                }
+            }
+        }, true, newPaymentIm.SuccessUrl, newPaymentIm.FailureUrl);
+
+        return new InitialisedPaymentLinkVm(sessionUrl.SessionUrl, paymentSession.Guid);
+    }
 
     public bool ConfirmPayment(Guid paymentSessionGuid)
     {

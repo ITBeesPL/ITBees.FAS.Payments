@@ -52,9 +52,7 @@ public class PaymentsManagerSetup : IFasDependencyRegistrationWithGenerics
         {
             throw new Exception(
                 "You must implement and register ILanguageFactory interface for proper work fas payment module");
-        }
-
-        ;
+        };
     }
 
     public static void RegisterDbModels(ModelBuilder modelBuilder)
@@ -70,5 +68,8 @@ public class PaymentsManagerSetup : IFasDependencyRegistrationWithGenerics
         modelBuilder.Entity<PlatformFeature>().HasKey(x => x.Id);
         modelBuilder.Entity<PaymentSession>().HasKey(x => x.Guid);
         modelBuilder.Entity<PaymentOperatorLog>().HasKey(x => x.Id);
+        modelBuilder.Entity<OrderPack>().HasKey(x => x.Guid);
+        modelBuilder.Entity<OrderPack>().HasMany(x => x.OrderElements).WithOne(x => x.OrderPack);
+        modelBuilder.Entity<OrderElement>().HasKey(x => x.Id);
     }
 }

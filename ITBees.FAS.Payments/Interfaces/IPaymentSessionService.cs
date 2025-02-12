@@ -5,6 +5,7 @@ namespace ITBees.FAS.Payments.Interfaces;
 public interface IPaymentSessionService
 {
     InitialisedPaymentLinkVm CreateNewPaymentSession(NewPaymentIm newPaymentIm);
+    InitialisedPaymentLinkVm CreateNewPaymentSession(NewMultiPaymentIm newPaymentIm);
     bool ConfirmPayment(Guid paymentSessionGuid);
     void CancelPayment(Guid paymentSessionGuid);
     bool UserCompanyHasEverMadePayment(Guid userAccountGuid);
