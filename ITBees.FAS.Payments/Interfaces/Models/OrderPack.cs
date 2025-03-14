@@ -9,4 +9,6 @@ public class OrderPack
     public UserAccount CreatedBy { get; set; }
     public Guid CreatedByGuid { get; set; }
     public DateTime Created { get; set; }
+    public bool Finished { get; set; }
+    public DateTime? FinishedDate { get; set; }
 }

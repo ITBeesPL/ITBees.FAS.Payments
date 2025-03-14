@@ -39,7 +39,7 @@ public class PaymentSessionService : IPaymentSessionService
     public InitialisedPaymentLinkVm CreateNewPaymentSession(NewPaymentIm newPaymentIm)
     {
         var currentUserGuid = _aspCurrentUserService.GetCurrentUserGuid();
-        PaymentSession paymentSession = _paymentSessionCreator.CreateNew(Created: DateTime.Now, currentUserGuid, _paymentProcessor, newPaymentIm.InvoiceDataGuid, string.Empty);
+        PaymentSession paymentSession = _paymentSessionCreator.CreateNew(Created: DateTime.Now, currentUserGuid: currentUserGuid, paymentProcessor: _paymentProcessor, invoiceDataGuid: newPaymentIm.InvoiceDataGuid, paymentOperator: string.Empty);
 
         var sessionUrl = _paymentProcessor.CreatePaymentSession(new FasPayment()
         {
@@ -66,7 +66,7 @@ public class PaymentSessionService : IPaymentSessionService
     public InitialisedPaymentLinkVm CreateNewPaymentSession(NewMultiPaymentIm newPaymentIm)
     {
         var currentUserGuid = _aspCurrentUserService.GetCurrentUserGuid();
-        PaymentSession paymentSession = _paymentSessionCreator.CreateNew(Created: DateTime.Now, currentUserGuid, _paymentProcessor, newPaymentIm.InvoiceDataGuid, string.Empty);
+        PaymentSession paymentSession = _paymentSessionCreator.CreateNew(Created: DateTime.Now, currentUserGuid, _paymentProcessor, newPaymentIm.InvoiceDataGuid, string.Empty, newPaymentIm.OrderPackGuid);
 
         var sessionUrl = _paymentProcessor.CreatePaymentSession(new FasPayment()
         {

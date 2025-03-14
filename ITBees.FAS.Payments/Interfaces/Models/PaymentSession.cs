@@ -18,4 +18,6 @@ public class PaymentSession
     public DateTime? FinishedDate { get; set; }
     public string? OperatorTransactionId { get; set; }
     public bool InvoiceCreated { get; set; }
+    public OrderPack OrderPack { get; set; }
+    public Guid? OrderPackGuid { get; set; }
 }
