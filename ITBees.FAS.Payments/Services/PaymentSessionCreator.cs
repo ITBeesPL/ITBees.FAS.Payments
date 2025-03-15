@@ -67,13 +67,15 @@ class PaymentSessionCreator : IPaymentSessionCreator
         {
             _orderPackFinalizerService.CloseSuccessfullyPayedOrderPack(paymentSession.OrderPackGuid.Value);
         }
-
-        _logger.LogDebug("Closing payment session finished...");
-
-        //to do service responsible for managing existing platform subscription on maybe active
-        _logger.LogDebug("Apply subscription plan stared...");
-        _applySubscriptionPlanToCompanyService.Apply(paymentSession.InvoiceData.SubscriptionPlan,
-            paymentSession.InvoiceData.CompanyGuid);
+        else
+        {
+            _logger.LogDebug("Closing payment session finished...");
+            //to do service responsible for managing existing platform subscription on maybe active
+            _logger.LogDebug("Apply subscription plan stared...");
+            _applySubscriptionPlanToCompanyService.Apply(paymentSession.InvoiceData.SubscriptionPlan,
+                paymentSession.InvoiceData.CompanyGuid);     
+        }
+       
         _logger.LogDebug("Apply subscription plan finished...");
     }
 }
