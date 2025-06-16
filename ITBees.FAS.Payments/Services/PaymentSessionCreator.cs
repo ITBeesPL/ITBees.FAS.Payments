@@ -38,7 +38,27 @@ class PaymentSessionCreator : IPaymentSessionCreator
             Finished = false,
             PaymentOperator = string.IsNullOrEmpty(paymentOperator) ? paymentProcessor.ProcessorName : paymentOperator,
             InvoiceDataGuid = invoiceDataGuid,
-            OrderPackGuid = orderPackGuid
+            OrderPackGuid = orderPackGuid,
+            FromSubscriptionRenew = false
+        };
+
+        var paymentSession = _paymentSessionRwRepo.InsertData(newPaymentSession);
+        return paymentSession;
+    }
+    
+    public PaymentSession CreatePaymentSessionFromSubscriptionRenew(DateTime Created, Guid? currentUserGuid,
+        IFasPaymentProcessor paymentProcessor, Guid invoiceDataGuid, string paymentOperator, Guid? orderPackGuid = null)
+    {
+        var newPaymentSession = new PaymentSession()
+        {
+            Created = DateTime.Now,
+            CreatedByGuid = currentUserGuid,
+            Success = false,
+            Finished = false,
+            PaymentOperator = string.IsNullOrEmpty(paymentOperator) ? paymentProcessor.ProcessorName : paymentOperator,
+            InvoiceDataGuid = invoiceDataGuid,
+            OrderPackGuid = orderPackGuid,
+            FromSubscriptionRenew = true
         };
 
         var paymentSession = _paymentSessionRwRepo.InsertData(newPaymentSession);

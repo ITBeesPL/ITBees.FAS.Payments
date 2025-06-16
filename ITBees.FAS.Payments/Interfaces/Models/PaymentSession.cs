@@ -20,4 +20,5 @@ public class PaymentSession
     public bool InvoiceCreated { get; set; }
     public OrderPack OrderPack { get; set; }
     public Guid? OrderPackGuid { get; set; }
+    public bool FromSubscriptionRenew { get; set; }
 }
