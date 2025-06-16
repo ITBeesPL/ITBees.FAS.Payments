@@ -7,5 +7,5 @@ public interface ICardTerminalService
     event Action<TransactionResult> TransactionSucceeded;
     event Action<TransactionResult> TransactionFailed;
 
-    Task<TransactionResult> StartTransactionAsync(string type, decimal amount);
+    Task<TransactionResult> StartTransactionAsync(CashlessTransactionType type, decimal amount);
 }
