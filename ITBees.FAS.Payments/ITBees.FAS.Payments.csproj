@@ -15,7 +15,7 @@
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.4" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
         <PackageReference Include="Stripe.net" Version="47.4.0" />
-        <PackageReference Include="ITBees.RestfulApiControllers" Version="8.0.24" />
+        <PackageReference Include="ITBees.RestfulApiControllers" Version="8.0.25" />
       </ItemGroup>  
   
 <!--    <ItemGroup>-->
