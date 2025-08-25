@@ -26,26 +26,43 @@ public class InvoiceDataService : IInvoiceDataService
         _invoiceDataRwRepo = invoiceDataRwRepo;
         _companyRoRepo = companyRoRepo;
     }
-    public InvoiceDataVm Create(InvoiceDataIm invoiceDataIm)
+    public InvoiceDataVm Create(InvoiceDataIm invoiceDataIm, bool allowUpdateIfExists)
     {
         var currentInvoiceData = _invoiceDataRoRepo.GetData(x => x.CompanyGuid == invoiceDataIm.CompanyGuid, x => x.SubscriptionPlan, x => x.Company, x => x.CreatedBy).FirstOrDefault();
         var cu = _aspCurrentUserService.GetCurrentUser();
         try
         {
-            if (currentInvoiceData == null)
+            bool createNew = currentInvoiceData == null || !allowUpdateIfExists;
+
+            Guid createdByGuid;
+
+            if (cu != null && cu.Guid != Guid.Empty)
+            {
+                createdByGuid = cu.Guid;
+            }
+            else if (currentInvoiceData != null)
+            {
+                createdByGuid = currentInvoiceData.CreatedBy.Guid;
+            }
+            else
+            {
+                throw new InvalidOperationException("No current user and no existing invoice data to copy CreatedBy from.");
+            }
+
+            if (createNew)
             {
                 var result = _invoiceDataRwRepo.InsertData(new InvoiceData()
                 {
-                    City = invoiceDataIm.City == null ? "" : invoiceDataIm.City,
+                    City = invoiceDataIm.City ?? "",
                     CompanyGuid = invoiceDataIm.CompanyGuid,
-                    Country = invoiceDataIm.Country == null ? "" : invoiceDataIm.Country,
-                    CompanyName = invoiceDataIm.CompanyName == null ? "" : invoiceDataIm.CompanyName,
+                    Country = invoiceDataIm.Country ?? "",
+                    CompanyName = invoiceDataIm.CompanyName ?? "",
                     Created = DateTime.Now,
-                    CreatedByGuid = cu.Guid,
-                    InvoiceEmail = invoiceDataIm.InvoiceEmail == null ? "" : invoiceDataIm.InvoiceEmail,
-                    NIP = invoiceDataIm.NIP == null ? "" : invoiceDataIm.NIP,
-                    PostCode = invoiceDataIm.PostCode == null ? "" : invoiceDataIm.PostCode,
-                    Street = invoiceDataIm.Street == null ? "" : invoiceDataIm.Street,
+                    CreatedByGuid = createdByGuid,
+                    InvoiceEmail = invoiceDataIm.InvoiceEmail ?? "",
+                    NIP = invoiceDataIm.NIP ?? "",
+                    PostCode = invoiceDataIm.PostCode ?? "",
+                    Street = invoiceDataIm.Street ?? "",
                     SubscriptionPlanGuid = invoiceDataIm.SubscriptionPlanGuid,
                     InvoiceRequested = invoiceDataIm.InvoiceRequested
                 });
