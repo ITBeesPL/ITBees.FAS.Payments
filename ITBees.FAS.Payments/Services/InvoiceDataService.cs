@@ -26,13 +26,30 @@ public class InvoiceDataService : IInvoiceDataService
         _invoiceDataRwRepo = invoiceDataRwRepo;
         _companyRoRepo = companyRoRepo;
     }
-    public InvoiceDataVm Create(InvoiceDataIm invoiceDataIm)
+    public InvoiceDataVm Create(InvoiceDataIm invoiceDataIm, bool allowUpdateIfExists)
     {
         var currentInvoiceData = _invoiceDataRoRepo.GetData(x => x.CompanyGuid == invoiceDataIm.CompanyGuid, x => x.SubscriptionPlan, x => x.Company, x => x.CreatedBy).FirstOrDefault();
         var cu = _aspCurrentUserService.GetCurrentUser();
         try
         {
-            if (currentInvoiceData == null)
+            bool createNew = currentInvoiceData == null || allowUpdateIfExists == false;
+
+            Guid createdByGuid;
+
+            if (cu != null && cu.Guid != Guid.Empty)
+            {
+                createdByGuid = cu.Guid;
+            }
+            else if (currentInvoiceData != null)
+            {
+                createdByGuid = currentInvoiceData.CreatedBy.Guid;
+            }
+            else
+            {
+                throw new InvalidOperationException("No current user and no existing invoice data to copy CreatedBy from.");
+            }
+
+            if (createNew)
             {
                 var result = _invoiceDataRwRepo.InsertData(new InvoiceData()
                 {
