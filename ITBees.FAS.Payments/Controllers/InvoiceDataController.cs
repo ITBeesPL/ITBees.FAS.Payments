@@ -21,7 +21,7 @@ public class InvoiceDataController : RestfulControllerBase<InvoiceDataController
     [Produces(typeof(InvoiceDataVm))]
     public IActionResult Post([FromBody] InvoiceDataIm invoiceDataIm)
     {
-        InvoiceDataVm result = _invoiceDataService.Create(invoiceDataIm, true);
+        InvoiceDataVm result = _invoiceDataService.Create(invoiceDataIm);
         return Ok(result);
     }
 

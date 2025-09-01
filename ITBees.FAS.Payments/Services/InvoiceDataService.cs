@@ -32,7 +32,7 @@ public class InvoiceDataService : IInvoiceDataService
         var cu = _aspCurrentUserService.GetCurrentUser();
         try
         {
-            bool createNew = currentInvoiceData == null || !allowUpdateIfExists;
+            bool createNew = currentInvoiceData == null || allowUpdateIfExists == false;
 
             Guid createdByGuid;
 
@@ -53,16 +53,16 @@ public class InvoiceDataService : IInvoiceDataService
             {
                 var result = _invoiceDataRwRepo.InsertData(new InvoiceData()
                 {
-                    City = invoiceDataIm.City ?? "",
+                    City = invoiceDataIm.City == null ? "" : invoiceDataIm.City,
                     CompanyGuid = invoiceDataIm.CompanyGuid,
-                    Country = invoiceDataIm.Country ?? "",
-                    CompanyName = invoiceDataIm.CompanyName ?? "",
+                    Country = invoiceDataIm.Country == null ? "" : invoiceDataIm.Country,
+                    CompanyName = invoiceDataIm.CompanyName == null ? "" : invoiceDataIm.CompanyName,
                     Created = DateTime.Now,
-                    CreatedByGuid = createdByGuid,
-                    InvoiceEmail = invoiceDataIm.InvoiceEmail ?? "",
-                    NIP = invoiceDataIm.NIP ?? "",
-                    PostCode = invoiceDataIm.PostCode ?? "",
-                    Street = invoiceDataIm.Street ?? "",
+                    CreatedByGuid = cu.Guid,
+                    InvoiceEmail = invoiceDataIm.InvoiceEmail == null ? "" : invoiceDataIm.InvoiceEmail,
+                    NIP = invoiceDataIm.NIP == null ? "" : invoiceDataIm.NIP,
+                    PostCode = invoiceDataIm.PostCode == null ? "" : invoiceDataIm.PostCode,
+                    Street = invoiceDataIm.Street == null ? "" : invoiceDataIm.Street,
                     SubscriptionPlanGuid = invoiceDataIm.SubscriptionPlanGuid,
                     InvoiceRequested = invoiceDataIm.InvoiceRequested
                 });
