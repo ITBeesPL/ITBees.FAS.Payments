@@ -58,7 +58,7 @@ public class InvoiceDataService : IInvoiceDataService
                     Country = invoiceDataIm.Country == null ? "" : invoiceDataIm.Country,
                     CompanyName = invoiceDataIm.CompanyName == null ? "" : invoiceDataIm.CompanyName,
                     Created = DateTime.Now,
-                    CreatedByGuid = cu.Guid,
+                    CreatedByGuid = createdByGuid,
                     InvoiceEmail = invoiceDataIm.InvoiceEmail == null ? "" : invoiceDataIm.InvoiceEmail,
                     NIP = invoiceDataIm.NIP == null ? "" : invoiceDataIm.NIP,
                     PostCode = invoiceDataIm.PostCode == null ? "" : invoiceDataIm.PostCode,
@@ -67,8 +67,8 @@ public class InvoiceDataService : IInvoiceDataService
                     InvoiceRequested = invoiceDataIm.InvoiceRequested
                 });
 
-                _invoiceDataRoRepo.GetData(x => x.Guid == result.Guid, x => x.Company, x => x.CreatedBy,
-                    x => x.SubscriptionPlan);
+                result = _invoiceDataRoRepo.GetData(x => x.Guid == result.Guid, x => x.Company, x => x.CreatedBy,
+                    x => x.SubscriptionPlan).FirstOrDefault();
                 return new InvoiceDataVm(result);
             }
             else

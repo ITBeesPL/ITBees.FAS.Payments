@@ -1,6 +1,7 @@
 ﻿using ITBees.FAS.Payments.Interfaces;
 using ITBees.FAS.Payments.Interfaces.Models;
 using ITBees.Interfaces.Repository;
+using ITBees.Models.Companies;
 using Microsoft.Extensions.Logging;
 
 namespace ITBees.FAS.Payments.Services;
@@ -17,7 +18,7 @@ class PaymentSessionCreator : IPaymentSessionCreator
         IWriteOnlyRepository<PaymentSession> paymentSessionRwRepo,
         IReadOnlyRepository<PaymentSession> paymentSessionRoRepo,
         IApplySubscriptionPlanToCompanyService applySubscriptionPlanToCompanyService,
-        ILogger<PaymentSessionCreator> logger, 
+        ILogger<PaymentSessionCreator> logger,
         IOrderPackFinalizerService orderPackFinalizerService)
     {
         _paymentSessionRwRepo = paymentSessionRwRepo;
@@ -45,9 +46,10 @@ class PaymentSessionCreator : IPaymentSessionCreator
         var paymentSession = _paymentSessionRwRepo.InsertData(newPaymentSession);
         return paymentSession;
     }
-    
+
     public PaymentSession CreatePaymentSessionFromSubscriptionRenew(DateTime Created, Guid? currentUserGuid,
-        IFasPaymentProcessor paymentProcessor, Guid invoiceDataGuid, string paymentOperator, Guid? orderPackGuid = null)
+        IFasPaymentProcessor paymentProcessor, Guid invoiceDataGuid, string paymentOperator, Guid? orderPackGuid = null,
+        string? customerSubscriptionId = null, bool invoiceCreated = false)
     {
         var newPaymentSession = new PaymentSession()
         {
@@ -58,14 +60,34 @@ class PaymentSessionCreator : IPaymentSessionCreator
             PaymentOperator = string.IsNullOrEmpty(paymentOperator) ? paymentProcessor.ProcessorName : paymentOperator,
             InvoiceDataGuid = invoiceDataGuid,
             OrderPackGuid = orderPackGuid,
-            FromSubscriptionRenew = true
+            FromSubscriptionRenew = true,
+            OperatorTransactionId = customerSubscriptionId,
+            InvoiceCreated = invoiceCreated
         };
 
         var paymentSession = _paymentSessionRwRepo.InsertData(newPaymentSession);
         return paymentSession;
     }
 
-    public void CloseSuccessfulPayment(Guid guid)
+    public Company? TryGetCompanyWithSubscriptionPlanFromPaymentSubscriptionId(string stripeSubscriptionId)
+    {
+        if (string.IsNullOrEmpty(stripeSubscriptionId))
+            return null;
+        
+        var result = _paymentSessionRoRepo.GetData(x => x.OperatorTransactionId == stripeSubscriptionId,
+                x => x.InvoiceData, x => x.InvoiceData.Company.CompanyPlatformSubscription.SubscriptionPlan)
+            .FirstOrDefault();
+        try
+        {
+            return result.InvoiceData.Company;
+        }
+        catch (Exception e)
+        {
+            return null;
+        } 
+    }
+
+    public void CloseSuccessfulPayment(Guid guid, string customerSubscriptionId = null)
     {
         _logger.LogDebug("Closing payment session started...");
 
@@ -81,8 +103,9 @@ class PaymentSessionCreator : IPaymentSessionCreator
             x.Finished = true;
             x.Success = true;
             x.FinishedDate = DateTime.Now;
+            x.OperatorTransactionId = customerSubscriptionId;
         });
-        
+
         if (paymentSession.OrderPackGuid != null)
         {
             _orderPackFinalizerService.CloseSuccessfullyPayedOrderPack(paymentSession.OrderPackGuid.Value);
@@ -93,9 +116,9 @@ class PaymentSessionCreator : IPaymentSessionCreator
             //to do service responsible for managing existing platform subscription on maybe active
             _logger.LogDebug("Apply subscription plan stared...");
             _applySubscriptionPlanToCompanyService.Apply(paymentSession.InvoiceData.SubscriptionPlan,
-                paymentSession.InvoiceData.CompanyGuid);     
+                paymentSession.InvoiceData.CompanyGuid);
         }
-       
+
         _logger.LogDebug("Apply subscription plan finished...");
     }
 }

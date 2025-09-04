@@ -5,4 +5,5 @@ namespace ITBees.FAS.Payments.Interfaces;
 public interface IApplySubscriptionPlanToCompanyService
 {
     void Apply(PlatformSubscriptionPlan subscriptionPlan, Guid companyGuid);
+    void Revoke(Guid companyGuid);
 }

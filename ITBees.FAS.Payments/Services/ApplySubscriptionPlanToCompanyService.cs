@@ -73,4 +73,18 @@ class ApplySubscriptionPlanToCompanyService : IApplySubscriptionPlanToCompanySer
             },
             x => x.CompanyPlatformSubscription);
     }
+
+    public void Revoke(Guid companyGuid)
+    {
+        _companyRwRepo.UpdateData(
+            x => x.Guid == companyGuid,
+            x =>
+            {
+                if (x.CompanyPlatformSubscription != null)
+                {
+                    x.CompanyPlatformSubscription.SubscriptionActiveTo = DateTime.Now.AddMinutes(-1);
+                }
+            },
+            x => x.CompanyPlatformSubscription);
+    }
 }
