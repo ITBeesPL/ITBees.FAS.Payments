@@ -268,7 +268,7 @@ public class InvoiceDataService : IInvoiceDataService
     public void CreateCorrectiveInvoiceForRefundForLastPaymentSession(Guid companyGuid)
     {
         var paymentSession = _paymentSessionRoRepo.GetData(x => x.InvoiceData.Company.Guid == companyGuid)
-            .OrderBy(x => x.Created)
+            .OrderByDescending(x => x.Created)
             .FirstOrDefault();
         if (paymentSession == null)
         {
