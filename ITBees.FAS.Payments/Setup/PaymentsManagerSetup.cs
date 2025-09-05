@@ -71,5 +71,19 @@ public class PaymentsManagerSetup : IFasDependencyRegistrationWithGenerics
         modelBuilder.Entity<OrderPack>().HasKey(x => x.Guid);
         modelBuilder.Entity<OrderPack>().HasMany(x => x.OrderElements).WithOne(x => x.OrderPack);
         modelBuilder.Entity<OrderElement>().HasKey(x => x.Id);
+        modelBuilder.Entity<PaymentSession>()
+            .Property(x => x.PaymentEventId)
+            .HasMaxLength(128); // keep index key size under SQL Server limits
+
+        modelBuilder.Entity<PaymentSession>()
+            .Property(x => x.PaymentOperator)
+            .HasMaxLength(64);
+
+        // Unique index that ignores rows where either column is NULL (SQL Server syntax)
+        modelBuilder.Entity<PaymentSession>()
+            .HasIndex(x => new { x.PaymentEventId, x.PaymentOperator })
+            .HasDatabaseName("UX_PaymentSession_EventId_Operator")
+            .IsUnique()
+            .HasFilter("[PaymentEventId] IS NOT NULL AND [PaymentOperator] IS NOT NULL");
     }
 }

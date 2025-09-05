@@ -48,7 +48,8 @@ class PaymentSessionCreator : IPaymentSessionCreator
     }
 
     public PaymentSession CreatePaymentSessionFromSubscriptionRenew(DateTime created, Guid? currentUserGuid,
-        IFasPaymentProcessor paymentProcessor, Guid invoiceDataGuid, string paymentOperator, Guid? orderPackGuid = null,
+        IFasPaymentProcessor paymentProcessor, Guid invoiceDataGuid, string paymentOperator, string paymentEventId,
+        Guid? orderPackGuid = null,
         string? customerSubscriptionId = null, bool invoiceCreated = false)
     {
         var newPaymentSession = new PaymentSession()
@@ -62,10 +63,23 @@ class PaymentSessionCreator : IPaymentSessionCreator
             OrderPackGuid = orderPackGuid,
             FromSubscriptionRenew = true,
             OperatorTransactionId = customerSubscriptionId,
-            InvoiceCreated = invoiceCreated
+            InvoiceCreated = invoiceCreated,
+            FinishedDate = created,
+            PaymentEventId = paymentEventId
         };
+        PaymentSession? paymentSession = null;
+        try
+        {
+            paymentSession = _paymentSessionRwRepo.InsertData(newPaymentSession);
+        }
+        catch (Exception e)
+        {
+            if (e.InnerException.Message.Contains("Duplicate"))
+            {
+                paymentSession = _paymentSessionRoRepo.GetData(x=>x.PaymentOperator == paymentOperator && x.PaymentEventId == paymentEventId).FirstOrDefault();
+            }
+        }
 
-        var paymentSession = _paymentSessionRwRepo.InsertData(newPaymentSession);
         return paymentSession;
     }
 
@@ -87,14 +101,20 @@ class PaymentSessionCreator : IPaymentSessionCreator
         }
     }
 
-    public void CloseSuccessfulPayment(Guid guid, DateTime sessionCreated, string customerSubscriptionId = null)
+    public void CloseSuccessfulPayment(Guid guid, DateTime sessionCreated, string customerSubscriptionId,
+        string paymentEventId  = null)
     {
-        _logger.LogDebug("Closing payment session started...");
+        _logger.LogDebug($"Closing payment session id : {paymentEventId} started...");
 
 
         var paymentSession = _paymentSessionRoRepo.GetFirst(x => x.Guid == guid,
             x => x.InvoiceData,
             x => x.InvoiceData.SubscriptionPlan, x => x.OrderPack);
+        if (paymentSession.PaymentEventId == paymentEventId)
+        {
+            _logger.LogInformation($"Payment session id : {paymentEventId} already closed");
+            return;
+        }
 
         _logger.LogDebug($"Update payment session - guid {guid}");
 
@@ -102,8 +122,9 @@ class PaymentSessionCreator : IPaymentSessionCreator
         {
             x.Finished = true;
             x.Success = true;
-            x.FinishedDate = DateTime.Now;
+            x.FinishedDate = sessionCreated;
             x.OperatorTransactionId = customerSubscriptionId;
+            x.PaymentEventId = paymentEventId;
         });
 
         if (paymentSession.OrderPackGuid != null)

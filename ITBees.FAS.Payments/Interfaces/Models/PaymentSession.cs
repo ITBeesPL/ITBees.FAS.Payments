@@ -23,4 +23,5 @@ public class PaymentSession
     public bool FromSubscriptionRenew { get; set; }
     public bool Refunded { get; set; }
     public bool CorrectiveInvoiceIssued { get; set; }
+    public string PaymentEventId { get; set; }
 }
