@@ -77,6 +77,13 @@ class PaymentSessionCreator : IPaymentSessionCreator
             if (e.InnerException.Message.Contains("Duplicate"))
             {
                 paymentSession = _paymentSessionRoRepo.GetData(x=>x.PaymentOperator == paymentOperator && x.PaymentEventId == paymentEventId).FirstOrDefault();
+                if (paymentSession.FinishedDate == null)
+                {
+                    _paymentSessionRwRepo.UpdateData(x => x.Guid == paymentSession.Guid, x =>
+                    {
+                        x.FinishedDate = created;
+                    });
+                }
             }
         }
 
