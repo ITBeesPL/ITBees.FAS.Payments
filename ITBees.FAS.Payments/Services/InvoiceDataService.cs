@@ -231,10 +231,20 @@ public class InvoiceDataService : IInvoiceDataService
         return CreateNewInvoiceData(company, existingInvoiceData, platformSubscriptionPlan);
     }
 
-    public void CreateCorrectiveInvoiceForRefund(Guid companyGuid, decimal refundAmount, string subscriptionId)
+    public void CreateCorrectiveInvoiceForRefund(Guid companyGuid, decimal refundAmount, string subscriptionId,
+        PaymentSession? paymentSession = null)
     {
-        var paymentSession = _paymentSessionRoRepo.GetData(x => x.OperatorTransactionId == subscriptionId)
-            .FirstOrDefault();
+        if (paymentSession == null && string.IsNullOrEmpty(subscriptionId))
+        {
+            _logger.LogError("No subscriptionId or payment session provided, cannot create corrective invoice.");
+        }
+
+        if (string.IsNullOrEmpty(subscriptionId) == false)
+        {
+            paymentSession = _paymentSessionRoRepo.GetData(x => x.OperatorTransactionId == subscriptionId)
+                .FirstOrDefault();
+        }
+        
         if (paymentSession == null)
         {
             var message = $"Payment session for {subscriptionId} not found, while trying to create corrective invoice.";
@@ -253,7 +263,15 @@ public class InvoiceDataService : IInvoiceDataService
     public void CreateCorrectiveInvoiceForRefundForLastPaymentSession(Guid companyGuid)
     {
         var paymentSession = _paymentSessionRoRepo.GetData(x => x.InvoiceData.Company.Guid == companyGuid)
+            .OrderByDescending(x => x.Created)
             .FirstOrDefault();
+        if (paymentSession == null)
+        {
+            _logger.LogError(
+                $"No payment session found for company guid : {companyGuid} while trying to create corrective invoice.");
+            return;
+        }
+
         CreateCorrectiveInvoiceForRefund(companyGuid, 0, paymentSession.OperatorTransactionId);
     }
 

@@ -47,16 +47,16 @@ class PaymentSessionCreator : IPaymentSessionCreator
         return paymentSession;
     }
 
-    public PaymentSession CreatePaymentSessionFromSubscriptionRenew(DateTime Created, Guid? currentUserGuid,
+    public PaymentSession CreatePaymentSessionFromSubscriptionRenew(DateTime created, Guid? currentUserGuid,
         IFasPaymentProcessor paymentProcessor, Guid invoiceDataGuid, string paymentOperator, Guid? orderPackGuid = null,
         string? customerSubscriptionId = null, bool invoiceCreated = false)
     {
         var newPaymentSession = new PaymentSession()
         {
-            Created = DateTime.Now,
+            Created = created,
             CreatedByGuid = currentUserGuid,
-            Success = false,
-            Finished = false,
+            Success = true,
+            Finished = true,
             PaymentOperator = string.IsNullOrEmpty(paymentOperator) ? paymentProcessor.ProcessorName : paymentOperator,
             InvoiceDataGuid = invoiceDataGuid,
             OrderPackGuid = orderPackGuid,

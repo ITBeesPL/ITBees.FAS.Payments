@@ -1,4 +1,5 @@
 ﻿using ITBees.FAS.Payments.Controllers.Models;
+using ITBees.FAS.Payments.Interfaces.Models;
 using ITBees.Models.Companies;
 using ITBees.Models.Payments;
 
@@ -17,6 +18,6 @@ public interface IInvoiceDataService
     InvoiceDataVm CreateNewEmptyInvoiceData(Guid companyGuid);
     InvoiceDataVm CreateNewInvoiceBasedOnLastInvoice(Company companyGuid,
         PlatformSubscriptionPlan platformSubscriptionPlan);
-    void CreateCorrectiveInvoiceForRefund(Guid companyGuid, decimal refundAmount, string subscriptionId);
+    void CreateCorrectiveInvoiceForRefund(Guid companyGuid, decimal refundAmount, string subscriptionId, PaymentSession? paymentSession = null);
     void CreateCorrectiveInvoiceForRefundForLastPaymentSession(Guid companyGuid);
 }
