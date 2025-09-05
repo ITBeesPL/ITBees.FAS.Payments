@@ -8,10 +8,11 @@ public interface IPaymentSessionCreator
     PaymentSession CreateNew(DateTime Created, Guid? currentUserGuid, IFasPaymentProcessor paymentProcessor,
         Guid invoiceDataGuid, string paymentOperator, Guid? orderPackGuid = null);
 
-    void CloseSuccessfulPayment(Guid guid, DateTime sessionCreated, string customerSubscriptionId = null);
+    void CloseSuccessfulPayment(Guid guid, DateTime sessionCreated, string paymentEventId,
+        string customerSubscriptionId = null);
 
     PaymentSession CreatePaymentSessionFromSubscriptionRenew(DateTime Created, Guid? currentUserGuid,
-        IFasPaymentProcessor paymentProcessor, Guid invoiceDataGuid, string paymentOperator,
+        IFasPaymentProcessor paymentProcessor, Guid invoiceDataGuid, string paymentOperator, string paymentEventId,
         Guid? orderPackGuid = null, string? customerSubscriptionId = null,bool invoiceCreated = false);
 
     Company? TryGetCompanyWithSubscriptionPlanFromPaymentSubscriptionId(string stripeSubscriptionId);

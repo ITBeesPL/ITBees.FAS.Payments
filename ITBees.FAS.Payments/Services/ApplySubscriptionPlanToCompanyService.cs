@@ -56,7 +56,7 @@ class ApplySubscriptionPlanToCompanyService : IApplySubscriptionPlanToCompanySer
                     {
                         SubscriptionPlanGuid = subscriptionPlan.Guid,
                         SubscriptionPlanName = subscriptionPlan.PlanName,
-                        SubscriptionActiveTo = DateTime.Now
+                        SubscriptionActiveTo = startingFrom
                             .AddMonths(subscriptionPlan.Interval)
                             .AddDays(subscriptionPlan.IntervalDays),
                         TrialNotAvailable = subscriptionPlan.IsTrial
@@ -66,7 +66,7 @@ class ApplySubscriptionPlanToCompanyService : IApplySubscriptionPlanToCompanySer
                 {
                     x.CompanyPlatformSubscription.SubscriptionPlanGuid = subscriptionPlan.Guid;
                     x.CompanyPlatformSubscription.SubscriptionPlanName = subscriptionPlan.PlanName;
-                    x.CompanyPlatformSubscription.SubscriptionActiveTo = DateTime.Now
+                    x.CompanyPlatformSubscription.SubscriptionActiveTo = startingFrom
                         .AddMonths(subscriptionPlan.Interval)
                         .AddDays(subscriptionPlan.IntervalDays);
                 }

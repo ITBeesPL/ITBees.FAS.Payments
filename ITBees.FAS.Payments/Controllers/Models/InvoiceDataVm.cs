@@ -22,7 +22,10 @@ public class InvoiceDataVm
         SubscriptionPlan = x.SubscriptionPlan?.PlanName;
         SubscriptionPlanGuid = x.SubscriptionPlan?.Guid;
         InvoiceRequested = x.InvoiceRequested;
+        CreatedByGuid = x.CreatedByGuid;
     }
+
+    public Guid CreatedByGuid { get; set; }
 
     public bool InvoiceRequested { get; set; }
     public Guid? SubscriptionPlanGuid { get; set; }

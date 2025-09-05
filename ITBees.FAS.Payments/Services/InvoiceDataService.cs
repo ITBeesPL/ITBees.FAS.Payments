@@ -172,6 +172,7 @@ public class InvoiceDataService : IInvoiceDataService
         PlatformSubscriptionPlan platformSubscriptionPlan = null)
     {
         InvoiceData entity = null;
+
         if (lastInvoiceData == null)
         {
             entity = new InvoiceData()
@@ -181,7 +182,7 @@ public class InvoiceDataService : IInvoiceDataService
                 CompanyName = company.CompanyName,
                 Country = "",
                 Created = DateTime.Now,
-                CreatedByGuid = _aspCurrentUserService.GetCurrentUserGuid().Value,
+                CreatedByGuid = company.CreatedByGuid.Value,
                 InvoiceEmail = _aspCurrentUserService.GetCurrentUser().Email,
                 InvoiceRequested = string.IsNullOrEmpty(company.Nip) ? false : true,
                 IsActive = true,
@@ -193,13 +194,14 @@ public class InvoiceDataService : IInvoiceDataService
         }
         else
         {
-            var newInvoiceData = new InvoiceData()
+            entity = new InvoiceData()
             {
                 City = lastInvoiceData.City == null ? "" : lastInvoiceData.City,
                 CompanyGuid = company.Guid,
                 Country = lastInvoiceData.Country == null ? "" : lastInvoiceData.Country,
                 CompanyName = lastInvoiceData.CompanyName == null ? "" : lastInvoiceData.CompanyName,
                 InvoiceEmail = lastInvoiceData.InvoiceEmail == null ? "" : lastInvoiceData.InvoiceEmail,
+                CreatedByGuid = lastInvoiceData.CreatedByGuid, 
                 NIP = lastInvoiceData.NIP == null ? "" : lastInvoiceData.NIP,
                 PostCode = lastInvoiceData.PostCode == null ? "" : lastInvoiceData.PostCode,
                 Street = lastInvoiceData.Street == null ? "" : lastInvoiceData.Street,
