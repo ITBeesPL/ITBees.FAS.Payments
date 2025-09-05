@@ -250,6 +250,13 @@ public class InvoiceDataService : IInvoiceDataService
         });
     }
 
+    public void CreateCorrectiveInvoiceForRefundForLastPaymentSession(Guid companyGuid)
+    {
+        var paymentSession = _paymentSessionRoRepo.GetData(x => x.InvoiceData.Company.Guid == companyGuid)
+            .FirstOrDefault();
+        CreateCorrectiveInvoiceForRefund(companyGuid, 0, paymentSession.OperatorTransactionId);
+    }
+
     public InvoiceDataVm Update(InvoiceDataUm invoiceDataUm)
     {
         var invoiceData = _invoiceDataRoRepo.GetData(x => x.Guid == invoiceDataUm.Guid).FirstOrDefault();

@@ -18,4 +18,5 @@ public interface IInvoiceDataService
     InvoiceDataVm CreateNewInvoiceBasedOnLastInvoice(Company companyGuid,
         PlatformSubscriptionPlan platformSubscriptionPlan);
     void CreateCorrectiveInvoiceForRefund(Guid companyGuid, decimal refundAmount, string subscriptionId);
+    void CreateCorrectiveInvoiceForRefundForLastPaymentSession(Guid companyGuid);
 }
