@@ -76,13 +76,13 @@ class PaymentSessionCreator : IPaymentSessionCreator
         {
             if (e.InnerException.Message.Contains("Duplicate"))
             {
-                paymentSession = _paymentSessionRoRepo.GetData(x=>x.PaymentOperator == paymentOperator && x.PaymentEventId == paymentEventId).FirstOrDefault();
+                paymentSession = _paymentSessionRoRepo
+                    .GetData(x => x.PaymentOperator == paymentOperator && x.PaymentEventId == paymentEventId)
+                    .FirstOrDefault();
                 if (paymentSession.FinishedDate == null)
                 {
-                    _paymentSessionRwRepo.UpdateData(x => x.Guid == paymentSession.Guid, x =>
-                    {
-                        x.FinishedDate = created;
-                    });
+                    _paymentSessionRwRepo.UpdateData(x => x.Guid == paymentSession.Guid,
+                        x => { x.FinishedDate = created; });
                 }
             }
         }
@@ -109,7 +109,7 @@ class PaymentSessionCreator : IPaymentSessionCreator
     }
 
     public void CloseSuccessfulPayment(Guid guid, DateTime sessionCreated, string customerSubscriptionId,
-        string paymentEventId  = null)
+        string paymentEventId = null)
     {
         _logger.LogDebug($"Closing payment session id : {paymentEventId} started...");
 
