@@ -25,7 +25,7 @@ public class PaymentSummaryService : IPaymentSummaryService
         _accessChecker.CheckAccess(authKey);
 
         var data = _paymentSessionRepository.GetDataQueryable(
-                x => x.Success && x.FinishedDate.HasValue, 
+                x => x.Success && x.FinishedDate.HasValue && x.Refunded == false, 
                 x => x.InvoiceData.SubscriptionPlan)
             .GroupBy(x => new { x.FinishedDate.Value.Year, x.FinishedDate.Value.Month, x.PaymentOperator, x.InvoiceData.SubscriptionPlan.Value })
             .Select(g => new PaymentSummaryElementVm
