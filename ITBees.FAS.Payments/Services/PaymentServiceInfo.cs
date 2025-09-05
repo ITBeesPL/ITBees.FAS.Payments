@@ -54,7 +54,17 @@ public class PaymentServiceInfo : IPaymentServiceInfo
     {
         _accessChecker.CheckAccess(authKey);
         var platformName = _platformSettingsService.GetSetting("PlatformName");
-        return _paymentSessionRoRepo.GetDataPaginated(x => x.Finished && x.Success,
+        return _paymentSessionRoRepo.GetDataPaginated(x => x.Finished && x.Success && x.Refunded == false,
+            new SortOptions(page, pageSize, sortColumn, sortOrder),
+            x => x.InvoiceData, x => x.InvoiceData.SubscriptionPlan,
+            x => x.CreatedBy).MapTo(x => new FinishedPaymentVm(x, platformName));
+    }
+    public PaginatedResult<FinishedPaymentVm> GetFinishedAndRefundedPaymentsWithoutCorrectiveInvoiceIssued(string? authKey, int? page, int? pageSize, string? sortColumn,
+        SortOrder? sortOrder)
+    {
+        _accessChecker.CheckAccess(authKey);
+        var platformName = _platformSettingsService.GetSetting("PlatformName");
+        return _paymentSessionRoRepo.GetDataPaginated(x => x.Finished && x.Success && x.Refunded && x.CorrectiveInvoiceIssued == false,
             new SortOptions(page, pageSize, sortColumn, sortOrder),
             x => x.InvoiceData, x => x.InvoiceData.SubscriptionPlan,
             x => x.CreatedBy).MapTo(x => new FinishedPaymentVm(x, platformName));

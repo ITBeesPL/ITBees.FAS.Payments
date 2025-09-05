@@ -3,9 +3,11 @@ using ITBees.FAS.Payments.Interfaces;
 using ITBees.FAS.Payments.Interfaces.Models;
 using ITBees.Interfaces.Repository;
 using ITBees.Models.Companies;
+using ITBees.Models.Payments;
 using ITBees.Models.Users;
 using ITBees.RestfulApiControllers.Exceptions;
 using ITBees.UserManager.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace ITBees.FAS.Payments.Services;
 
@@ -15,20 +17,31 @@ public class InvoiceDataService : IInvoiceDataService
     private readonly IReadOnlyRepository<InvoiceData> _invoiceDataRoRepo;
     private readonly IWriteOnlyRepository<InvoiceData> _invoiceDataRwRepo;
     private readonly IReadOnlyRepository<Company> _companyRoRepo;
+    private readonly ILogger<InvoiceDataService> _logger;
+    private readonly IWriteOnlyRepository<PaymentSession> _paymentSessionRwRepo;
+    private readonly IReadOnlyRepository<PaymentSession> _paymentSessionRoRepo;
 
     public InvoiceDataService(IAspCurrentUserService aspCurrentUserService,
         IReadOnlyRepository<InvoiceData> invoiceDataRoRepo,
         IWriteOnlyRepository<InvoiceData> invoiceDataRwRepo,
-        IReadOnlyRepository<Company> companyRoRepo)
+        IReadOnlyRepository<Company> companyRoRepo,
+        ILogger<InvoiceDataService> logger,
+        IWriteOnlyRepository<PaymentSession> paymentSessionRwRepo,
+        IReadOnlyRepository<PaymentSession> paymentSessionRoRepo)
     {
         _aspCurrentUserService = aspCurrentUserService;
         _invoiceDataRoRepo = invoiceDataRoRepo;
         _invoiceDataRwRepo = invoiceDataRwRepo;
         _companyRoRepo = companyRoRepo;
+        _logger = logger;
+        _paymentSessionRwRepo = paymentSessionRwRepo;
+        _paymentSessionRoRepo = paymentSessionRoRepo;
     }
+
     public InvoiceDataVm Create(InvoiceDataIm invoiceDataIm, bool allowUpdateIfExists)
     {
-        var currentInvoiceData = _invoiceDataRoRepo.GetData(x => x.CompanyGuid == invoiceDataIm.CompanyGuid, x => x.SubscriptionPlan, x => x.Company, x => x.CreatedBy).FirstOrDefault();
+        var currentInvoiceData = _invoiceDataRoRepo.GetData(x => x.CompanyGuid == invoiceDataIm.CompanyGuid,
+            x => x.SubscriptionPlan, x => x.Company, x => x.CreatedBy).FirstOrDefault();
         var cu = _aspCurrentUserService.GetCurrentUser();
         try
         {
@@ -46,7 +59,8 @@ public class InvoiceDataService : IInvoiceDataService
             }
             else
             {
-                throw new InvalidOperationException("No current user and no existing invoice data to copy CreatedBy from.");
+                throw new InvalidOperationException(
+                    "No current user and no existing invoice data to copy CreatedBy from.");
             }
 
             if (createNew)
@@ -64,7 +78,8 @@ public class InvoiceDataService : IInvoiceDataService
                     PostCode = invoiceDataIm.PostCode == null ? "" : invoiceDataIm.PostCode,
                     Street = invoiceDataIm.Street == null ? "" : invoiceDataIm.Street,
                     SubscriptionPlanGuid = invoiceDataIm.SubscriptionPlanGuid,
-                    InvoiceRequested = invoiceDataIm.InvoiceRequested
+                    InvoiceRequested = invoiceDataIm.InvoiceRequested,
+                    IsActive = invoiceDataIm.IsActive
                 });
 
                 result = _invoiceDataRoRepo.GetData(x => x.Guid == result.Guid, x => x.Company, x => x.CreatedBy,
@@ -104,7 +119,7 @@ public class InvoiceDataService : IInvoiceDataService
 
         var result = _invoiceDataRwRepo.UpdateData(x => x.Guid == invoiceDataGuid, x =>
         {
-            x.CompanyGuid = invoiceData.CompanyGuid ;
+            x.CompanyGuid = invoiceData.CompanyGuid;
             x.Country = invoiceData.Country == null ? "" : invoiceData.Country;
             x.NIP = invoiceData.NIP == null ? "" : invoiceData.NIP;
             x.City = invoiceData.City == null ? "" : invoiceData.City;
@@ -150,27 +165,89 @@ public class InvoiceDataService : IInvoiceDataService
             throw new ResultNotFoundException("Company not found");
         }
 
-        var entity = new InvoiceData()
+        return CreateNewInvoiceData(company);
+    }
+
+    private InvoiceDataVm CreateNewInvoiceData(Company company, InvoiceData lastInvoiceData = null,
+        PlatformSubscriptionPlan platformSubscriptionPlan = null)
+    {
+        InvoiceData entity = null;
+        if (lastInvoiceData == null)
         {
-            City = company.City == null ? "" : company.City,
-            CompanyGuid = company.Guid,
-            CompanyName = company.CompanyName,
-            Country = "",
-            Created = DateTime.Now,
-            CreatedByGuid = _aspCurrentUserService.GetCurrentUserGuid().Value,
-            InvoiceEmail = _aspCurrentUserService.GetCurrentUser().Email,
-            InvoiceRequested = string.IsNullOrEmpty(company.Nip) ? false : true,
-            IsActive = true,
-            NIP = company.Nip == null ? "" : company.Nip,
-            PostCode = company.PostCode == null ? "" : company.PostCode,
-            Street = company.Street == null ? "" : company.Street,
-            SubscriptionPlanGuid = null
-        };
+            entity = new InvoiceData()
+            {
+                City = company.City == null ? "" : company.City,
+                CompanyGuid = company.Guid,
+                CompanyName = company.CompanyName,
+                Country = "",
+                Created = DateTime.Now,
+                CreatedByGuid = _aspCurrentUserService.GetCurrentUserGuid().Value,
+                InvoiceEmail = _aspCurrentUserService.GetCurrentUser().Email,
+                InvoiceRequested = string.IsNullOrEmpty(company.Nip) ? false : true,
+                IsActive = true,
+                NIP = company.Nip == null ? "" : company.Nip,
+                PostCode = company.PostCode == null ? "" : company.PostCode,
+                Street = company.Street == null ? "" : company.Street,
+                SubscriptionPlanGuid = platformSubscriptionPlan?.Guid
+            };
+        }
+        else
+        {
+            var newInvoiceData = new InvoiceData()
+            {
+                City = lastInvoiceData.City == null ? "" : lastInvoiceData.City,
+                CompanyGuid = company.Guid,
+                Country = lastInvoiceData.Country == null ? "" : lastInvoiceData.Country,
+                CompanyName = lastInvoiceData.CompanyName == null ? "" : lastInvoiceData.CompanyName,
+                InvoiceEmail = lastInvoiceData.InvoiceEmail == null ? "" : lastInvoiceData.InvoiceEmail,
+                NIP = lastInvoiceData.NIP == null ? "" : lastInvoiceData.NIP,
+                PostCode = lastInvoiceData.PostCode == null ? "" : lastInvoiceData.PostCode,
+                Street = lastInvoiceData.Street == null ? "" : lastInvoiceData.Street,
+                SubscriptionPlanGuid = platformSubscriptionPlan?.Guid,
+                InvoiceRequested = lastInvoiceData.InvoiceRequested,
+                IsActive = true
+            };
+        }
 
         var result = _invoiceDataRwRepo.InsertData(entity);
 
         return new InvoiceDataVm(_invoiceDataRoRepo.GetFirst(x => x.Guid == result.Guid, x => x.Company,
             x => x.CreatedBy, x => x.SubscriptionPlan));
+    }
+
+    public InvoiceDataVm CreateNewInvoiceBasedOnLastInvoice(Company company,
+        PlatformSubscriptionPlan platformSubscriptionPlan)
+    {
+        var existingInvoiceData = _invoiceDataRoRepo.GetData(x => x.CompanyGuid == company.Guid)
+            .OrderByDescending(x => x.Created).FirstOrDefault();
+        if (existingInvoiceData == null)
+        {
+            var message =
+                $"No invoice data found for company : {company.CompanyName} (guid:{company.Guid}), cannot create new invoice data.";
+            _logger.LogError(message);
+            throw new Exception(message);
+        }
+
+        return CreateNewInvoiceData(company, existingInvoiceData, platformSubscriptionPlan);
+    }
+
+    public void CreateCorrectiveInvoiceForRefund(Guid companyGuid, decimal refundAmount, string subscriptionId)
+    {
+        var paymentSession = _paymentSessionRoRepo.GetData(x => x.OperatorTransactionId == subscriptionId)
+            .FirstOrDefault();
+        if (paymentSession == null)
+        {
+            var message = $"Payment session for {subscriptionId} not found, while trying to create corrective invoice.";
+            _logger.LogError(message);
+            throw new Exception(message);
+        }
+
+        //ToDo manager process of creating corrective invoice
+        _paymentSessionRwRepo.UpdateData(x => x.Guid == paymentSession.Guid, x =>
+        {
+            x.Refunded = true;
+            // x.CorrectiveInvoiceIssued = true //ToDo after creating corrective invoice
+        });
     }
 
     public InvoiceDataVm Update(InvoiceDataUm invoiceDataUm)

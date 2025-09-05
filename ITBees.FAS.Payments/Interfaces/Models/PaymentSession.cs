@@ -21,4 +21,6 @@ public class PaymentSession
     public OrderPack OrderPack { get; set; }
     public Guid? OrderPackGuid { get; set; }
     public bool FromSubscriptionRenew { get; set; }
+    public bool Refunded { get; set; }
+    public bool CorrectiveInvoiceIssued { get; set; }
 }
