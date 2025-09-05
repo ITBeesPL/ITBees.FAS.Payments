@@ -31,6 +31,7 @@ class PaymentSessionCreator : IPaymentSessionCreator
     public PaymentSession CreateNew(DateTime Created, Guid? currentUserGuid,
         IFasPaymentProcessor paymentProcessor, Guid invoiceDataGuid, string paymentOperator, Guid? orderPackGuid = null)
     {
+        var newGuid = Guid.NewGuid();
         var newPaymentSession = new PaymentSession()
         {
             Created = DateTime.Now,
@@ -40,7 +41,9 @@ class PaymentSessionCreator : IPaymentSessionCreator
             PaymentOperator = string.IsNullOrEmpty(paymentOperator) ? paymentProcessor.ProcessorName : paymentOperator,
             InvoiceDataGuid = invoiceDataGuid,
             OrderPackGuid = orderPackGuid,
-            FromSubscriptionRenew = false
+            FromSubscriptionRenew = false,
+            Guid = newGuid,
+            PaymentEventId = newGuid.ToString(), // beacuse we have unique index on (PaymentOperator, PaymentEventId) so its ineeded until we get real event id from payment operator
         };
 
         var paymentSession = _paymentSessionRwRepo.InsertData(newPaymentSession);
