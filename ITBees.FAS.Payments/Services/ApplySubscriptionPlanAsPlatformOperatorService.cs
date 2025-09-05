@@ -27,7 +27,7 @@ class ApplySubscriptionPlanAsPlatformOperatorService : IApplySubscriptionPlanAsP
         var subscriptionPlan = _platformSubscriptionPlanRoRepo.GetFirst(x=>x.Guid == applySubscriptionPlanToCompanyIm.SubscriptionPlanGuid);
         try
         {
-            _applySubscriptionPlanToCompanyService.Apply(subscriptionPlan, applySubscriptionPlanToCompanyIm.CompanyGuid);
+            _applySubscriptionPlanToCompanyService.Apply(subscriptionPlan, applySubscriptionPlanToCompanyIm.CompanyGuid, applySubscriptionPlanToCompanyIm.StartingFrom);
             return new ApplySubscriptionPlanResultVm() { Success = true };
         }
         catch (Exception e)

@@ -27,6 +27,6 @@ public class NewPaymentSubscriptionController : RestfulControllerBase<NewPayment
     [HttpPost]
     public IActionResult Post([FromBody] NewPaymentSubscriptionIm newPaymentSubscriptionIm)
     {
-        return ReturnOkResult(() => _paymentSubscriptionService.CreateNewPaymentSubscriptionSession(newPaymentSubscriptionIm, string.Empty));
+        return ReturnOkResult(() => _paymentSubscriptionService.CreateNewPaymentSubscriptionSession(newPaymentSubscriptionIm, string.Empty, DateTime.Now));
     }
 }

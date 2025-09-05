@@ -73,7 +73,7 @@ class PaymentSessionCreator : IPaymentSessionCreator
     {
         if (string.IsNullOrEmpty(stripeSubscriptionId))
             return null;
-        
+
         var result = _paymentSessionRoRepo.GetData(x => x.OperatorTransactionId == stripeSubscriptionId,
                 x => x.InvoiceData, x => x.InvoiceData.Company.CompanyPlatformSubscription.SubscriptionPlan)
             .FirstOrDefault();
@@ -84,10 +84,10 @@ class PaymentSessionCreator : IPaymentSessionCreator
         catch (Exception e)
         {
             return null;
-        } 
+        }
     }
 
-    public void CloseSuccessfulPayment(Guid guid, string customerSubscriptionId = null)
+    public void CloseSuccessfulPayment(Guid guid, DateTime sessionCreated, string customerSubscriptionId = null)
     {
         _logger.LogDebug("Closing payment session started...");
 
@@ -116,7 +116,7 @@ class PaymentSessionCreator : IPaymentSessionCreator
             //to do service responsible for managing existing platform subscription on maybe active
             _logger.LogDebug("Apply subscription plan stared...");
             _applySubscriptionPlanToCompanyService.Apply(paymentSession.InvoiceData.SubscriptionPlan,
-                paymentSession.InvoiceData.CompanyGuid);
+                paymentSession.InvoiceData.CompanyGuid, sessionCreated);
         }
 
         _logger.LogDebug("Apply subscription plan finished...");

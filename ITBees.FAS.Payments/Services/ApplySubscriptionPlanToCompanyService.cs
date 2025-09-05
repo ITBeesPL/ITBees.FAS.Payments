@@ -28,7 +28,7 @@ class ApplySubscriptionPlanToCompanyService : IApplySubscriptionPlanToCompanySer
         _aspCurrentUserService = aspCurrentUserService;
     }
 
-    public void Apply(PlatformSubscriptionPlan subscriptionPlan, Guid companyGuid)
+    public void Apply(PlatformSubscriptionPlan subscriptionPlan, Guid companyGuid, DateTime startingFrom)
     {
 
         if (subscriptionPlan.IsTrial)

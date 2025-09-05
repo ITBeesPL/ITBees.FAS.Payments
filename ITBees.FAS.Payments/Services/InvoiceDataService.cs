@@ -241,8 +241,11 @@ public class InvoiceDataService : IInvoiceDataService
 
         if (string.IsNullOrEmpty(subscriptionId) == false)
         {
-            paymentSession = _paymentSessionRoRepo.GetData(x => x.OperatorTransactionId == subscriptionId)
-                .FirstOrDefault();
+            if (subscriptionId != paymentSession.OperatorTransactionId)
+            {
+                paymentSession = _paymentSessionRoRepo.GetData(x => x.OperatorTransactionId == subscriptionId)
+                    .FirstOrDefault();
+            }
         }
         
         if (paymentSession == null)
@@ -272,7 +275,7 @@ public class InvoiceDataService : IInvoiceDataService
             return;
         }
 
-        CreateCorrectiveInvoiceForRefund(companyGuid, 0, paymentSession.OperatorTransactionId);
+        CreateCorrectiveInvoiceForRefund(companyGuid, 0, paymentSession.OperatorTransactionId, paymentSession);
     }
 
     public InvoiceDataVm Update(InvoiceDataUm invoiceDataUm)

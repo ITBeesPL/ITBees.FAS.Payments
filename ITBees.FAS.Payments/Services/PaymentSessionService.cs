@@ -39,34 +39,37 @@ public class PaymentSessionService : IPaymentSessionService
     public InitialisedPaymentLinkVm CreateNewPaymentSession(NewPaymentIm newPaymentIm)
     {
         var currentUserGuid = _aspCurrentUserService.GetCurrentUserGuid();
-        PaymentSession paymentSession = _paymentSessionCreator.CreateNew(Created: DateTime.Now, currentUserGuid: currentUserGuid, paymentProcessor: _paymentProcessor, invoiceDataGuid: newPaymentIm.InvoiceDataGuid, paymentOperator: string.Empty);
+        PaymentSession paymentSession = _paymentSessionCreator.CreateNew(Created: DateTime.Now,
+            currentUserGuid: currentUserGuid, paymentProcessor: _paymentProcessor,
+            invoiceDataGuid: newPaymentIm.InvoiceDataGuid, paymentOperator: string.Empty);
 
         var sessionUrl = _paymentProcessor.CreatePaymentSession(new FasPayment()
         {
             PaymentSessionGuid = paymentSession.Guid,
             Mode = FasPaymentMode.Subscription,
             Products = new List<FasProduct>()
-         {
-             new FasProduct()
-             {
-                 BillingPeriod = FasBillingPeriod.Monthly,
-                 Currency = newPaymentIm.Currency,
-                 Quantity = newPaymentIm.Quantity,
-                 PaymentTitleOrProductName = newPaymentIm.ProductName,
-                 Price = newPaymentIm.Price,
-                 Interval = newPaymentIm.Interval,
-                 IntervalCount = newPaymentIm.IntervalCount
-             }
-         }
+            {
+                new FasProduct()
+                {
+                    BillingPeriod = FasBillingPeriod.Monthly,
+                    Currency = newPaymentIm.Currency,
+                    Quantity = newPaymentIm.Quantity,
+                    PaymentTitleOrProductName = newPaymentIm.ProductName,
+                    Price = newPaymentIm.Price,
+                    Interval = newPaymentIm.Interval,
+                    IntervalCount = newPaymentIm.IntervalCount
+                }
+            }
         }, true, newPaymentIm.SuccessUrl, newPaymentIm.FailureUrl);
 
         return new InitialisedPaymentLinkVm(sessionUrl.SessionUrl, paymentSession.Guid);
     }
-    
+
     public InitialisedPaymentLinkVm CreateNewPaymentSession(NewMultiPaymentIm newPaymentIm)
     {
         var currentUserGuid = _aspCurrentUserService.GetCurrentUserGuid();
-        PaymentSession paymentSession = _paymentSessionCreator.CreateNew(Created: DateTime.Now, currentUserGuid, _paymentProcessor, newPaymentIm.InvoiceDataGuid, string.Empty, newPaymentIm.OrderPackGuid);
+        PaymentSession paymentSession = _paymentSessionCreator.CreateNew(Created: DateTime.Now, currentUserGuid,
+            _paymentProcessor, newPaymentIm.InvoiceDataGuid, string.Empty, newPaymentIm.OrderPackGuid);
 
         var sessionUrl = _paymentProcessor.CreatePaymentSession(new FasPayment()
         {
@@ -92,7 +95,9 @@ public class PaymentSessionService : IPaymentSessionService
 
     public bool ConfirmPayment(Guid paymentSessionGuid)
     {
-        var paymentSession = _paymentSessionRoRepo.GetData(x => x.Guid == paymentSessionGuid, x => x.InvoiceData, x => x.InvoiceData.SubscriptionPlan).FirstOrDefault();
+        var paymentSession = _paymentSessionRoRepo
+            .GetData(x => x.Guid == paymentSessionGuid, x => x.InvoiceData, x => x.InvoiceData.SubscriptionPlan)
+            .FirstOrDefault();
         if (paymentSession == null)
             throw new ResultNotFoundException("PaymentSession not exist");
         if (paymentSession.Finished)
@@ -110,7 +115,8 @@ public class PaymentSessionService : IPaymentSessionService
                 x.Success = true;
             });
 
-            _applySubscriptionPlanToCompanyService.Apply(paymentSession.InvoiceData.SubscriptionPlan, paymentSession.InvoiceData.CompanyGuid);
+            _applySubscriptionPlanToCompanyService.Apply(paymentSession.InvoiceData.SubscriptionPlan,
+                paymentSession.InvoiceData.CompanyGuid, paymentSession.Created);
         }
 
         return paymentFinishedWithSuccessOnStripe;
@@ -127,7 +133,8 @@ public class PaymentSessionService : IPaymentSessionService
 
     public bool UserCompanyHasEverMadePayment(Guid userAccountGuid)
     {
-        var paymentSession = _paymentSessionRoRepo.GetData(x => x.InvoiceData.Company.OwnerGuid == userAccountGuid).FirstOrDefault();
+        var paymentSession = _paymentSessionRoRepo.GetData(x => x.InvoiceData.Company.OwnerGuid == userAccountGuid)
+            .FirstOrDefault();
         if (paymentSession != null)
         {
             return true;
@@ -159,7 +166,8 @@ public class PaymentSessionService : IPaymentSessionService
                 x.OperatorTransactionId = operatorTransactionId;
             });
 
-            _applySubscriptionPlanToCompanyService.Apply(paymentSession.InvoiceData.SubscriptionPlan, paymentSession.InvoiceData.CompanyGuid);
+            _applySubscriptionPlanToCompanyService.Apply(paymentSession.InvoiceData.SubscriptionPlan,
+                paymentSession.InvoiceData.CompanyGuid, paymentSession.Created);
 
             return true;
         }

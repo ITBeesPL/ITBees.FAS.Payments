@@ -4,4 +4,5 @@ public class ApplySubscriptionPlanToCompanyIm
 {
     public Guid SubscriptionPlanGuid { get; set; }
     public Guid CompanyGuid { get; set; }
+    public DateTime StartingFrom { get; set; }
 }

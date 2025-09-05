@@ -5,6 +5,6 @@ namespace ITBees.FAS.Payments.Interfaces;
 
 public interface IPaymentSubscriptionService
 {
-    InitialisedPaymentLinkVm CreateNewPaymentSubscriptionSession(NewPaymentSubscriptionIm newPaymentSubscriptionIm, string paymentOperator);
+    InitialisedPaymentLinkVm CreateNewPaymentSubscriptionSession(NewPaymentSubscriptionIm newPaymentSubscriptionIm, string paymentOperator, DateTime startingFrom);
     InitialisedApplePaymentVm CreateNewApplePaymentSubscriptionSession(NewApplePaymentSubscriptionIm newApplePaymentSubscriptionIm);
 }

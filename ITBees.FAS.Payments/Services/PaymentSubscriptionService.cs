@@ -46,7 +46,7 @@ class PaymentSubscriptionService : IPaymentSubscriptionService
     }
 
     public InitialisedPaymentLinkVm CreateNewPaymentSubscriptionSession(
-        NewPaymentSubscriptionIm newPaymentSubscriptionIm, string paymentOperator)
+        NewPaymentSubscriptionIm newPaymentSubscriptionIm, string paymentOperator, DateTime startingFrom)
     {
         var invoiceData = _invoiceDataRoRepo
             .GetData(x => x.CompanyGuid == newPaymentSubscriptionIm.CompanyGuid && x.IsActive).FirstOrDefault();
@@ -57,7 +57,7 @@ class PaymentSubscriptionService : IPaymentSubscriptionService
             invoiceData = new InvoiceData()
             {
                 Guid = newEmptyInvoiceData.Guid,
-                CompanyGuid = newEmptyInvoiceData.CompanyGuid
+                CompanyGuid = newEmptyInvoiceData.CompanyGuid,
             };
         }
         if (invoiceData == null)
@@ -83,7 +83,8 @@ class PaymentSubscriptionService : IPaymentSubscriptionService
             _applySubscriptionPlanAsPlatformOperatorService.Apply(new ApplySubscriptionPlanToCompanyIm()
             {
                 CompanyGuid = invoiceData.CompanyGuid,
-                SubscriptionPlanGuid = subcriptionPlan.Guid
+                SubscriptionPlanGuid = subcriptionPlan.Guid,
+                StartingFrom = startingFrom
             });
 
             return new InitialisedPaymentLinkVm(_platformSettingsService.GetSetting("PlatformRedirectUrlAfterTrialPlanEnabled"), null);
@@ -133,7 +134,7 @@ class PaymentSubscriptionService : IPaymentSubscriptionService
             SuccessUrl = string.Empty,
             InvoiceDataGuid = invoiceData.Guid,
             PlatformSubscriptionPlanGuid = subscriptionPlan.Guid,
-        }, "ApplePay");
+        }, "ApplePay", DateTime.Now);
 
         return new InitialisedApplePaymentVm(paymentSession);
     }
