@@ -22,6 +22,6 @@
 <!--        <ProjectReference Include="..\..\ITBees.PipedriveIntegration\ITBees.PipedriveIntegration\ITBees.PipedriveIntegration.csproj"/>-->
 <!--        <ProjectReference Include="..\..\ITBees.UserManager\ITBees.UserManager\ITBees.UserManager.csproj"/>-->
 <!--        <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>-->
-<!--        <PackageReference Include="Stripe.net" Version="47.0.0"/>-->
+<!--        <PackageReference Include="Stripe.net" Version="48.5.0"/>-->
 <!--    </ItemGroup>-->
 </Project>
