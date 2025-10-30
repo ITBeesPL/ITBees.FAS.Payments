@@ -15,4 +15,6 @@ public interface ICardTerminalService
     Task SendHelloExtendedAsync(string companyName = null, string ecrVersion = null, string protocolVersionNnnmmpp = "0047511");
     Task<EcrReportResult> RequestPreviewCumulativeReportAsync(int bParam, int? profileId = null,
         int timeoutMs = 20000);
+
+    Task<EcrSettlementResult> RequestSettlementUploadReportAsync(int? profileId = null, int timeoutMs = 30000);
 }
