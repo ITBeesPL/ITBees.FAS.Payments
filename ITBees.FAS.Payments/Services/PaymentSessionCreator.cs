@@ -147,7 +147,7 @@ class PaymentSessionCreator : IPaymentSessionCreator
             //to do service responsible for managing existing platform subscription on maybe active
             _logger.LogDebug("Apply subscription plan stared...");
             _applySubscriptionPlanToCompanyService.Apply(paymentSession.InvoiceData.SubscriptionPlan,
-                paymentSession.InvoiceData.CompanyGuid, sessionCreated);
+                paymentSession.InvoiceData.CompanyGuid.Value, sessionCreated);
         }
 
         _logger.LogDebug("Apply subscription plan finished...");

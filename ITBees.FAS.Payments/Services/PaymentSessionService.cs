@@ -116,7 +116,7 @@ public class PaymentSessionService : IPaymentSessionService
             });
 
             _applySubscriptionPlanToCompanyService.Apply(paymentSession.InvoiceData.SubscriptionPlan,
-                paymentSession.InvoiceData.CompanyGuid, paymentSession.Created);
+                paymentSession.InvoiceData.CompanyGuid.Value, paymentSession.Created);
         }
 
         return paymentFinishedWithSuccessOnStripe;
@@ -167,7 +167,7 @@ public class PaymentSessionService : IPaymentSessionService
             });
 
             _applySubscriptionPlanToCompanyService.Apply(paymentSession.InvoiceData.SubscriptionPlan,
-                paymentSession.InvoiceData.CompanyGuid, paymentSession.Created);
+                paymentSession.InvoiceData.CompanyGuid.Value, paymentSession.Created);
 
             return true;
         }

@@ -82,7 +82,7 @@ class PaymentSubscriptionService : IPaymentSubscriptionService
         {
             _applySubscriptionPlanAsPlatformOperatorService.Apply(new ApplySubscriptionPlanToCompanyIm()
             {
-                CompanyGuid = invoiceData.CompanyGuid,
+                CompanyGuid = invoiceData.CompanyGuid.Value,
                 SubscriptionPlanGuid = subcriptionPlan.Guid,
                 StartingFrom = startingFrom
             });

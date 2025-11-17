@@ -25,14 +25,14 @@ public class InvoiceDataVm
         CreatedByGuid = x.CreatedByGuid;
     }
 
-    public Guid CreatedByGuid { get; set; }
+    public Guid? CreatedByGuid { get; set; }
 
     public bool InvoiceRequested { get; set; }
     public Guid? SubscriptionPlanGuid { get; set; }
 
     public string SubscriptionPlan { get; set; }
     public Guid Guid { get; set; }
-    public Guid CompanyGuid { get; set; }
+    public Guid? CompanyGuid { get; set; }
     public string NIP { get; set; }
     public string Street { get; set; }
     public string City { get; set; }
