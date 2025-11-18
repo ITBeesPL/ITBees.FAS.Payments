@@ -1,5 +1,6 @@
 ﻿using ITBees.FAS.Payments.Controllers.Models;
 using ITBees.FAS.Payments.Interfaces;
+using ITBees.Models.Payments;
 using ITBees.RestfulApiControllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
