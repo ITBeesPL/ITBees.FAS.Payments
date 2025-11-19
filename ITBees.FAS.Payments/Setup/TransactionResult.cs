@@ -9,4 +9,5 @@ public class TransactionResult
     public string Stan { get; set; }
     public string AuthCode { get; set; }
     public string RetrievalReferenceNumber { get; set; }
+    public string? TransactionType { get; set; }
 }
