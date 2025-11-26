@@ -17,4 +17,6 @@ public interface ICardTerminalService
         int timeoutMs = 20000);
 
     Task<EcrSettlementResult> RequestSettlementUploadReportAsync(int? profileId = null, int timeoutMs = 30000);
+    bool DeviceInitialized { get; }
+    bool DeviceConfigurationLoaded { get; }
 }
