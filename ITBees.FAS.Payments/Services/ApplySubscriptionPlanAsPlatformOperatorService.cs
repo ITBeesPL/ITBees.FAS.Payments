@@ -28,6 +28,13 @@ class ApplySubscriptionPlanAsPlatformOperatorService : IApplySubscriptionPlanAsP
         try
         {
             _applySubscriptionPlanToCompanyService.Apply(subscriptionPlan, applySubscriptionPlanToCompanyIm.CompanyGuid, applySubscriptionPlanToCompanyIm.StartingFrom);
+            if (applySubscriptionPlanToCompanyIm.ValidTo.HasValue)
+            {
+                _companyRwRepo.UpdateData(x => x.Guid == applySubscriptionPlanToCompanyIm.CompanyGuid, x =>
+                {
+                    x.CompanyPlatformSubscription.SubscriptionActiveTo = applySubscriptionPlanToCompanyIm.ValidTo.Value;
+                });
+            }
             return new ApplySubscriptionPlanResultVm() { Success = true };
         }
         catch (Exception e)
