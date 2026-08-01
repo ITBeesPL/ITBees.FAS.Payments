@@ -13,19 +13,22 @@ class PaymentSessionCreator : IPaymentSessionCreator
     private readonly IApplySubscriptionPlanToCompanyService _applySubscriptionPlanToCompanyService;
     private readonly ILogger<PaymentSessionCreator> _logger;
     private readonly IOrderPackFinalizerService _orderPackFinalizerService;
+    private readonly ISuccessfulPaymentInvoiceIssuer _successfulPaymentInvoiceIssuer;
 
     public PaymentSessionCreator(
         IWriteOnlyRepository<PaymentSession> paymentSessionRwRepo,
         IReadOnlyRepository<PaymentSession> paymentSessionRoRepo,
         IApplySubscriptionPlanToCompanyService applySubscriptionPlanToCompanyService,
         ILogger<PaymentSessionCreator> logger,
-        IOrderPackFinalizerService orderPackFinalizerService)
+        IOrderPackFinalizerService orderPackFinalizerService,
+        ISuccessfulPaymentInvoiceIssuer successfulPaymentInvoiceIssuer = null)
     {
         _paymentSessionRwRepo = paymentSessionRwRepo;
         _paymentSessionRoRepo = paymentSessionRoRepo;
         _applySubscriptionPlanToCompanyService = applySubscriptionPlanToCompanyService;
         _logger = logger;
         _orderPackFinalizerService = orderPackFinalizerService;
+        _successfulPaymentInvoiceIssuer = successfulPaymentInvoiceIssuer;
     }
 
     public PaymentSession CreateNew(DateTime Created, Guid? currentUserGuid,
@@ -151,5 +154,19 @@ class PaymentSessionCreator : IPaymentSessionCreator
         }
 
         _logger.LogDebug("Apply subscription plan finished...");
+
+        if (_successfulPaymentInvoiceIssuer != null)
+        {
+            try
+            {
+                _successfulPaymentInvoiceIssuer.IssueInvoiceForPaidSession(paymentSession);
+            }
+            catch (Exception e)
+            {
+                // Invoice issuing must never break payment closing; the issuer is expected to retry on its own.
+                _logger.LogError(e,
+                    $"ISuccessfulPaymentInvoiceIssuer failed for payment session {paymentSession.Guid}");
+            }
+        }
     }
 }

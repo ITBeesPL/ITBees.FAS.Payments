@@ -8,8 +8,8 @@ public interface IPaymentSessionCreator
     PaymentSession CreateNew(DateTime Created, Guid? currentUserGuid, IFasPaymentProcessor paymentProcessor,
         Guid invoiceDataGuid, string paymentOperator, Guid? orderPackGuid = null);
 
-    void CloseSuccessfulPayment(Guid guid, DateTime sessionCreated, string paymentEventId,
-        string customerSubscriptionId = null);
+    void CloseSuccessfulPayment(Guid guid, DateTime sessionCreated, string customerSubscriptionId,
+        string paymentEventId = null);
 
     PaymentSession CreatePaymentSessionFromSubscriptionRenew(DateTime Created, Guid? currentUserGuid,
         IFasPaymentProcessor paymentProcessor, Guid invoiceDataGuid, string paymentOperator, string paymentEventId,
