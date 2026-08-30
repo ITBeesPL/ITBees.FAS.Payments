@@ -93,7 +93,39 @@ class PaymentSessionCreator : IPaymentSessionCreator
             }
         }
 
+        if (paymentSession != null)
+        {
+            TryIssueInvoiceForPaidSession(paymentSession.Guid);
+        }
+
         return paymentSession;
+    }
+
+    /// <summary>
+    /// Invokes the optional ISuccessfulPaymentInvoiceIssuer hook for an already-closed session,
+    /// reloading it with InvoiceData and SubscriptionPlan as the hook contract requires. Never throws.
+    /// </summary>
+    private void TryIssueInvoiceForPaidSession(Guid paymentSessionGuid)
+    {
+        if (_successfulPaymentInvoiceIssuer == null)
+            return;
+
+        try
+        {
+            var sessionForInvoice = _paymentSessionRoRepo.GetData(x => x.Guid == paymentSessionGuid,
+                    x => x.InvoiceData, x => x.InvoiceData.SubscriptionPlan)
+                .FirstOrDefault();
+            if (sessionForInvoice == null)
+                return;
+
+            _successfulPaymentInvoiceIssuer.IssueInvoiceForPaidSession(sessionForInvoice);
+        }
+        catch (Exception e)
+        {
+            // Invoice issuing must never break payment closing; the issuer is expected to retry on its own.
+            _logger.LogError(e,
+                $"ISuccessfulPaymentInvoiceIssuer failed for payment session {paymentSessionGuid}");
+        }
     }
 
     public Company? TryGetCompanyWithSubscriptionPlanFromPaymentSubscriptionId(string stripeSubscriptionId)
