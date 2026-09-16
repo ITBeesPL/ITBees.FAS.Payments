@@ -207,7 +207,11 @@ public class InvoiceDataService : IInvoiceDataService
                 Street = lastInvoiceData.Street == null ? "" : lastInvoiceData.Street,
                 SubscriptionPlanGuid = platformSubscriptionPlan?.Guid,
                 InvoiceRequested = lastInvoiceData.InvoiceRequested,
-                IsActive = true
+                IsActive = true,
+                // Without this, renewal snapshots got default(DateTime) and every
+                // OrderByDescending(x => x.Created) pick (renewal template, admin edit)
+                // sorted them unpredictably.
+                Created = DateTime.Now
             };
         }
 
