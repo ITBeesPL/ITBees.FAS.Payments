@@ -169,7 +169,7 @@ public class InvoiceDataService : IInvoiceDataService
     }
 
     private InvoiceDataVm CreateNewInvoiceData(Company company, InvoiceData lastInvoiceData = null,
-        PlatformSubscriptionPlan platformSubscriptionPlan = null)
+        PlatformSubscriptionPlan platformSubscriptionPlan = null, bool isActive = true)
     {
         InvoiceData entity = null;
 
@@ -207,7 +207,7 @@ public class InvoiceDataService : IInvoiceDataService
                 Street = lastInvoiceData.Street == null ? "" : lastInvoiceData.Street,
                 SubscriptionPlanGuid = platformSubscriptionPlan?.Guid,
                 InvoiceRequested = lastInvoiceData.InvoiceRequested,
-                IsActive = true,
+                IsActive = isActive,
                 // Without this, renewal snapshots got default(DateTime) and every
                 // OrderByDescending(x => x.Created) pick (renewal template, admin edit)
                 // sorted them unpredictably.
@@ -235,6 +235,22 @@ public class InvoiceDataService : IInvoiceDataService
         }
 
         return CreateNewInvoiceData(company, existingInvoiceData, platformSubscriptionPlan);
+    }
+
+    public InvoiceDataVm CreatePaidSessionSnapshot(Guid sourceInvoiceDataGuid,
+        PlatformSubscriptionPlan platformSubscriptionPlan)
+    {
+        var sourceInvoiceData = _invoiceDataRoRepo.GetData(x => x.Guid == sourceInvoiceDataGuid, x => x.Company)
+            .FirstOrDefault();
+        if (sourceInvoiceData?.Company == null)
+        {
+            throw new ResultNotFoundException(
+                $"Invoice data {sourceInvoiceDataGuid} (with company) not found, cannot create paid session snapshot.");
+        }
+
+        // Inactive, so it never becomes the company's editable invoice data returned by Get().
+        return CreateNewInvoiceData(sourceInvoiceData.Company, sourceInvoiceData, platformSubscriptionPlan,
+            isActive: false);
     }
 
     public void CreateCorrectiveInvoiceForRefund(Guid companyGuid, decimal refundAmount, string subscriptionId,

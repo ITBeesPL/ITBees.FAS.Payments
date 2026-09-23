@@ -110,6 +110,8 @@ class PaymentSubscriptionService : IPaymentSubscriptionService
             }},
             CustomerEmail = _aspCurrentUserService.GetCurrentUser().Email,
             CustomerName = _aspCurrentUserService.GetCurrentUser().DisplayName,
+            SubscriptionPlanGuid = subcriptionPlan.Guid,
+            CompanyGuid = newPaymentSubscriptionIm.CompanyGuid
         };
         var result = _paymentProcessor.CreatePaymentSession(fasPayment, subcriptionPlan.IsOneTimePayment, newPaymentSubscriptionIm.SuccessUrl, newPaymentSubscriptionIm.FailureUrl);
 
