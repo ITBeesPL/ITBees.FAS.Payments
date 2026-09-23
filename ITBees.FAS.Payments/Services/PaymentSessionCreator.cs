@@ -2,6 +2,7 @@
 using ITBees.FAS.Payments.Interfaces.Models;
 using ITBees.Interfaces.Repository;
 using ITBees.Models.Companies;
+using ITBees.Models.Payments;
 using Microsoft.Extensions.Logging;
 
 namespace ITBees.FAS.Payments.Services;
@@ -13,6 +14,8 @@ class PaymentSessionCreator : IPaymentSessionCreator
     private readonly IApplySubscriptionPlanToCompanyService _applySubscriptionPlanToCompanyService;
     private readonly ILogger<PaymentSessionCreator> _logger;
     private readonly IOrderPackFinalizerService _orderPackFinalizerService;
+    private readonly IReadOnlyRepository<PlatformSubscriptionPlan> _platformSubscriptionPlanRoRepo;
+    private readonly IInvoiceDataService _invoiceDataService;
     private readonly ISuccessfulPaymentInvoiceIssuer _successfulPaymentInvoiceIssuer;
 
     public PaymentSessionCreator(
@@ -21,6 +24,8 @@ class PaymentSessionCreator : IPaymentSessionCreator
         IApplySubscriptionPlanToCompanyService applySubscriptionPlanToCompanyService,
         ILogger<PaymentSessionCreator> logger,
         IOrderPackFinalizerService orderPackFinalizerService,
+        IReadOnlyRepository<PlatformSubscriptionPlan> platformSubscriptionPlanRoRepo,
+        IInvoiceDataService invoiceDataService,
         ISuccessfulPaymentInvoiceIssuer successfulPaymentInvoiceIssuer = null)
     {
         _paymentSessionRwRepo = paymentSessionRwRepo;
@@ -28,6 +33,8 @@ class PaymentSessionCreator : IPaymentSessionCreator
         _applySubscriptionPlanToCompanyService = applySubscriptionPlanToCompanyService;
         _logger = logger;
         _orderPackFinalizerService = orderPackFinalizerService;
+        _platformSubscriptionPlanRoRepo = platformSubscriptionPlanRoRepo;
+        _invoiceDataService = invoiceDataService;
         _successfulPaymentInvoiceIssuer = successfulPaymentInvoiceIssuer;
     }
 
@@ -149,6 +156,12 @@ class PaymentSessionCreator : IPaymentSessionCreator
     public void CloseSuccessfulPayment(Guid guid, DateTime sessionCreated, string customerSubscriptionId,
         string paymentEventId = null)
     {
+        CloseSuccessfulPayment(guid, sessionCreated, customerSubscriptionId, paymentEventId, null);
+    }
+
+    public void CloseSuccessfulPayment(Guid guid, DateTime sessionCreated, string customerSubscriptionId,
+        string paymentEventId, Guid? paidSubscriptionPlanGuid)
+    {
         _logger.LogDebug($"Closing payment session id : {paymentEventId} started...");
 
 
@@ -179,26 +192,68 @@ class PaymentSessionCreator : IPaymentSessionCreator
         else
         {
             _logger.LogDebug("Closing payment session finished...");
-            //to do service responsible for managing existing platform subscription on maybe active
+            var paidSubscriptionPlan = GetPaidSubscriptionPlan(paymentSession, paidSubscriptionPlanGuid);
+            FreezePaidInvoiceData(paymentSession, paidSubscriptionPlan);
+
             _logger.LogDebug("Apply subscription plan stared...");
-            _applySubscriptionPlanToCompanyService.Apply(paymentSession.InvoiceData.SubscriptionPlan,
+            _applySubscriptionPlanToCompanyService.Apply(paidSubscriptionPlan,
                 paymentSession.InvoiceData.CompanyGuid.Value, sessionCreated);
         }
 
         _logger.LogDebug("Apply subscription plan finished...");
 
-        if (_successfulPaymentInvoiceIssuer != null)
+        // Reloaded, so the issuer sees the closed session with its frozen invoice data.
+        TryIssueInvoiceForPaidSession(paymentSession.Guid);
+    }
+
+    /// <summary>
+    /// The plan recorded by the payment operator at checkout wins over the plan on the session's invoice
+    /// data: that row is shared by every checkout of the company, so opening another checkout (even an
+    /// abandoned one, e.g. in a second tab) used to switch the plan of a checkout that was already open.
+    /// </summary>
+    private PlatformSubscriptionPlan GetPaidSubscriptionPlan(PaymentSession paymentSession,
+        Guid? paidSubscriptionPlanGuid)
+    {
+        var invoiceDataPlan = paymentSession.InvoiceData.SubscriptionPlan;
+        if (paidSubscriptionPlanGuid == null || paidSubscriptionPlanGuid == invoiceDataPlan?.Guid)
+            return invoiceDataPlan;
+
+        var paidSubscriptionPlan = _platformSubscriptionPlanRoRepo
+            .GetData(x => x.Guid == paidSubscriptionPlanGuid.Value).FirstOrDefault();
+        if (paidSubscriptionPlan == null)
         {
-            try
-            {
-                _successfulPaymentInvoiceIssuer.IssueInvoiceForPaidSession(paymentSession);
-            }
-            catch (Exception e)
-            {
-                // Invoice issuing must never break payment closing; the issuer is expected to retry on its own.
-                _logger.LogError(e,
-                    $"ISuccessfulPaymentInvoiceIssuer failed for payment session {paymentSession.Guid}");
-            }
+            _logger.LogError(
+                "Paid subscription plan {PlanGuid} of payment session {SessionGuid} not found, using invoice data plan {InvoiceDataPlan}",
+                paidSubscriptionPlanGuid, paymentSession.Guid, invoiceDataPlan?.PlanName);
+            return invoiceDataPlan;
+        }
+
+        _logger.LogWarning(
+            "Payment session {SessionGuid} was paid for plan {PaidPlan}, but its invoice data points to {InvoiceDataPlan} - using the paid plan",
+            paymentSession.Guid, paidSubscriptionPlan.PlanName, invoiceDataPlan?.PlanName);
+        return paidSubscriptionPlan;
+    }
+
+    /// <summary>
+    /// Re-points the paid session to its own inactive copy of the invoice data bound to the paid plan
+    /// (renewals already get such copies). Never throws - payment closing must not fail because of it.
+    /// </summary>
+    private void FreezePaidInvoiceData(PaymentSession paymentSession, PlatformSubscriptionPlan paidSubscriptionPlan)
+    {
+        if (paymentSession.InvoiceDataGuid == null || paidSubscriptionPlan == null)
+            return;
+
+        try
+        {
+            var snapshot = _invoiceDataService.CreatePaidSessionSnapshot(paymentSession.InvoiceDataGuid.Value,
+                paidSubscriptionPlan);
+            _paymentSessionRwRepo.UpdateData(x => x.Guid == paymentSession.Guid,
+                x => { x.InvoiceDataGuid = snapshot.Guid; });
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Could not freeze invoice data of paid payment session {SessionGuid}",
+                paymentSession.Guid);
         }
     }
 }

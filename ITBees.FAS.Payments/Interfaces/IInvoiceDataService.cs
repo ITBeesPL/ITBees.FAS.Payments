@@ -18,6 +18,15 @@ public interface IInvoiceDataService
     InvoiceDataVm CreateNewEmptyInvoiceData(Guid companyGuid);
     InvoiceDataVm CreateNewInvoiceBasedOnLastInvoice(Company companyGuid,
         PlatformSubscriptionPlan platformSubscriptionPlan);
+
+    /// <summary>
+    /// Creates an inactive copy of the given invoice data bound to the plan that was actually paid for.
+    /// A paid payment session is re-pointed to this copy, so later edits of the company's shared invoice
+    /// data (e.g. picking another plan in a new, maybe abandoned, checkout) can't change what the paid
+    /// session - and the invoice issued for it - was for.
+    /// </summary>
+    InvoiceDataVm CreatePaidSessionSnapshot(Guid sourceInvoiceDataGuid,
+        PlatformSubscriptionPlan platformSubscriptionPlan);
     void CreateCorrectiveInvoiceForRefund(Guid companyGuid, decimal refundAmount, string subscriptionId, PaymentSession? paymentSession = null);
     void CreateCorrectiveInvoiceForRefundForLastPaymentSession(Guid companyGuid);
 }
