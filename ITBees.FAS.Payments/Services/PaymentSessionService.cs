@@ -16,6 +16,7 @@ public class PaymentSessionService : IPaymentSessionService
     private readonly IPaymentSessionCreator _paymentSessionCreator;
     private readonly IReadOnlyRepository<PaymentSession> _paymentSessionRoRepo;
     private readonly IApplySubscriptionPlanToCompanyService _applySubscriptionPlanToCompanyService;
+    private readonly IOrderPackFinalizerService _orderPackFinalizerService;
     private readonly ILogger<PaymentSessionService> _logger;
 
     public PaymentSessionService(IWriteOnlyRepository<PaymentSession> paymentSessionRwRepo,
@@ -24,6 +25,7 @@ public class PaymentSessionService : IPaymentSessionService
         IPaymentSessionCreator paymentSessionCreator,
         IReadOnlyRepository<PaymentSession> paymentSessionRoRepo,
         IApplySubscriptionPlanToCompanyService applySubscriptionPlanToCompanyService,
+        IOrderPackFinalizerService orderPackFinalizerService,
         ILogger<PaymentSessionService> logger)
     {
         _paymentSessionRwRepo = paymentSessionRwRepo;
@@ -32,6 +34,7 @@ public class PaymentSessionService : IPaymentSessionService
         _paymentSessionCreator = paymentSessionCreator;
         _paymentSessionRoRepo = paymentSessionRoRepo;
         _applySubscriptionPlanToCompanyService = applySubscriptionPlanToCompanyService;
+        _orderPackFinalizerService = orderPackFinalizerService;
         _logger = logger;
     }
 
@@ -93,6 +96,48 @@ public class PaymentSessionService : IPaymentSessionService
         return new InitialisedPaymentLinkVm(sessionUrl.SessionUrl, paymentSession.Guid);
     }
 
+    public InitialisedPaymentLinkVm CreateOrderPackPaymentSession(NewOrderPackPaymentIm newOrderPackPaymentIm)
+    {
+        var products = newOrderPackPaymentIm.Products;
+        if (products == null || products.Count == 0)
+            throw new ArgumentException("Order pack payment needs at least one product");
+        if (products.Any(x => x.Quantity < 1 || x.Price < 0))
+            throw new ArgumentException("Order pack payment products need a positive quantity and a non-negative price");
+
+        var recurringProducts = products.Where(x => x.IsRecurring == true).ToList();
+        if (recurringProducts.Select(x => x.BillingPeriod).Distinct().Count() > 1)
+            throw new ArgumentException("All recurring products of one payment must share the billing period");
+
+        // Without a recurring product it is a plain one-time payment - every product is charged once.
+        var isSubscription = recurringProducts.Count > 0;
+        if (isSubscription == false)
+        {
+            foreach (var product in products)
+                product.IsRecurring = false;
+        }
+        else
+        {
+            foreach (var product in products.Where(x => x.IsRecurring == null))
+                product.IsRecurring = false;
+        }
+
+        var currentUserGuid = _aspCurrentUserService.GetCurrentUserGuid();
+        var paymentSession = _paymentSessionCreator.CreateNew(DateTime.Now, currentUserGuid, _paymentProcessor,
+            newOrderPackPaymentIm.InvoiceDataGuid, string.Empty, newOrderPackPaymentIm.OrderPackGuid);
+
+        var activeSession = _paymentProcessor.CreatePaymentSession(new FasPayment()
+        {
+            PaymentSessionGuid = paymentSession.Guid,
+            Mode = isSubscription ? FasPaymentMode.Subscription : FasPaymentMode.Payment,
+            Products = products,
+            CustomerEmail = newOrderPackPaymentIm.CustomerEmail,
+            CompanyGuid = newOrderPackPaymentIm.CompanyGuid,
+            OrderPackGuid = newOrderPackPaymentIm.OrderPackGuid
+        }, isSubscription == false, newOrderPackPaymentIm.SuccessUrl, newOrderPackPaymentIm.FailureUrl);
+
+        return new InitialisedPaymentLinkVm(activeSession.SessionUrl, paymentSession.Guid);
+    }
+
     public bool ConfirmPayment(Guid paymentSessionGuid)
     {
         var paymentSession = _paymentSessionRoRepo
@@ -114,6 +159,14 @@ public class PaymentSessionService : IPaymentSessionService
                 x.FinishedDate = DateTime.Now;
                 x.Success = true;
             });
+
+            // An order pack is not a platform plan - it is finalized by the host (the webhook may do it again
+            // later, so the finalizer must be idempotent).
+            if (paymentSession.OrderPackGuid != null)
+            {
+                _orderPackFinalizerService.CloseSuccessfullyPayedOrderPack(paymentSession.OrderPackGuid.Value);
+                return true;
+            }
 
             _applySubscriptionPlanToCompanyService.Apply(paymentSession.InvoiceData.SubscriptionPlan,
                 paymentSession.InvoiceData.CompanyGuid.Value, paymentSession.Created);

@@ -19,4 +19,11 @@ public class FasPayment
     /// Company the payment is made for (stored with the operator next to the plan).
     /// </summary>
     public Guid? CompanyGuid { get; set; }
+
+    /// <summary>
+    /// Order pack paid with this payment (stored with the operator, e.g. Stripe metadata). A subscription bought
+    /// for an order pack (e.g. a device service) is not a platform plan - its renewals and refunds are passed to
+    /// IOrderPackSubscriptionEventsHandler instead of extending or revoking the company's plan.
+    /// </summary>
+    public Guid? OrderPackGuid { get; set; }
 }
