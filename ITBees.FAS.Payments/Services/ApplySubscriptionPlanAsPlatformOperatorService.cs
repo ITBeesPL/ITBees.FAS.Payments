@@ -24,10 +24,15 @@ class ApplySubscriptionPlanAsPlatformOperatorService : IApplySubscriptionPlanAsP
     }
     public ApplySubscriptionPlanResultVm Apply(ApplySubscriptionPlanToCompanyIm applySubscriptionPlanToCompanyIm)
     {
+        return Apply(applySubscriptionPlanToCompanyIm, false);
+    }
+
+    public ApplySubscriptionPlanResultVm Apply(ApplySubscriptionPlanToCompanyIm applySubscriptionPlanToCompanyIm, bool allowUsedTrial)
+    {
         var subscriptionPlan = _platformSubscriptionPlanRoRepo.GetFirst(x=>x.Guid == applySubscriptionPlanToCompanyIm.SubscriptionPlanGuid);
         try
         {
-            _applySubscriptionPlanToCompanyService.Apply(subscriptionPlan, applySubscriptionPlanToCompanyIm.CompanyGuid, applySubscriptionPlanToCompanyIm.StartingFrom);
+            _applySubscriptionPlanToCompanyService.Apply(subscriptionPlan, applySubscriptionPlanToCompanyIm.CompanyGuid, applySubscriptionPlanToCompanyIm.StartingFrom, allowUsedTrial);
             if (applySubscriptionPlanToCompanyIm.ValidTo.HasValue)
             {
                 _companyRwRepo.UpdateData(x => x.Guid == applySubscriptionPlanToCompanyIm.CompanyGuid, x =>

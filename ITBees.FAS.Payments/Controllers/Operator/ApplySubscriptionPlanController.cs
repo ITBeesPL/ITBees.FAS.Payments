@@ -25,7 +25,9 @@ public class ApplySubscriptionPlanController : RestfulControllerBase<ApplySubscr
     [Produces<ApplySubscriptionPlanResultVm>]
     public IActionResult Post([FromBody] ApplySubscriptionPlanToCompanyIm applySubscriptionPlanToCompanyIm)
     {
-        return ReturnOkResult(() => _applySubscriptionPlanAsPlatformOperatorService.Apply(applySubscriptionPlanToCompanyIm));
+        // Only the platform operator gets here (class attribute), so a used trial may be applied again - e.g. when a
+        // complaint is accepted.
+        return ReturnOkResult(() => _applySubscriptionPlanAsPlatformOperatorService.Apply(applySubscriptionPlanToCompanyIm, true));
     }
 
     [HttpDelete]

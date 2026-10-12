@@ -30,14 +30,25 @@ class ApplySubscriptionPlanToCompanyService : IApplySubscriptionPlanToCompanySer
 
     public void Apply(PlatformSubscriptionPlan subscriptionPlan, Guid companyGuid, DateTime startingFrom)
     {
+        Apply(subscriptionPlan, companyGuid, startingFrom, false);
+    }
 
+    public void Apply(PlatformSubscriptionPlan subscriptionPlan, Guid companyGuid, DateTime startingFrom, bool allowUsedTrial)
+    {
         if (subscriptionPlan.IsTrial)
         {
             var company = _companyRoRepo.GetFirst(x => x.Guid == companyGuid, x => x.CompanyPlatformSubscription);
             if (company.CompanyPlatformSubscription is { TrialNotAvailable: true })
             {
-                var language = _aspCurrentUserService.GetCurrentUser() == null ? new En() : _aspCurrentUserService.GetCurrentUser().Language;
-                throw new ArgumentException(Translate.Get(() => Translations.ApplySubscriptionPlan.Errors.TrialPlanAlreadyUsed, language));
+                if (allowUsedTrial == false)
+                {
+                    var language = _aspCurrentUserService.GetCurrentUser() == null ? new En() : _aspCurrentUserService.GetCurrentUser().Language;
+                    throw new ArgumentException(Translate.Get(() => Translations.ApplySubscriptionPlan.Errors.TrialPlanAlreadyUsed, language));
+                }
+
+                _logger.LogInformation(
+                    "User {UserGuid} applied trial plan {SubscriptionPlan} again to company {CompanyGuid}, which has already used its trial",
+                    _aspCurrentUserService.GetCurrentUserGuid(), subscriptionPlan.PlanName, companyGuid);
             }
         }
         _companyRwRepo.UpdateData(
